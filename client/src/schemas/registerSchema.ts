@@ -5,4 +5,7 @@ export const registerSchemas = z.object({
   lastName: z.string().min(1, { message: "Required" }),
   email: z.string().min(1, { message: "Required" }).email(),
   password: z.string().min(1, { message: "Required" }),
+  avatar: z
+    .any()
+    .refine((file) => file?.length !== 0, { message: "File is required" }),
 });

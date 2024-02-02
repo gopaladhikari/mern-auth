@@ -18,24 +18,58 @@ export default function UserSignUpForm() {
 
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = ({
+    email,
+    firstName,
+    lastName,
+    password,
+    avatar,
+  }) => {
+    const formData = new FormData();
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("avatar", avatar[0]);
+    console.log(formData);
     startTransition(() => {
       (async () => {
-        const res = await fetch("/api/v1/users/register", {
+        const res = await fetch("/api/v1/user/register", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+          body: formData,
         });
         if (!res.ok) throw new Error("Failed to register");
+        const data = await res.json();
+        console.log("data", data);
       })();
     });
   };
 
   return (
     <>
-      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="space-y-5"
+        onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
+      >
+        <div>
+          <label htmlFor="avatar" className="block mb-2 text-sm font-medium ">
+            Avatar
+          </label>
+          <input
+            type="file"
+            id="avatar"
+            className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
+            placeholder="John"
+            disabled={isPending}
+            {...register("avatar")}
+          />
+          {errors.avatar && (
+            <p className="text-red-600 p-1">
+              {errors.avatar?.message as string}
+            </p>
+          )}
+        </div>
         <div>
           <label
             htmlFor="firstName"

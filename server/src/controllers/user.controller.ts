@@ -2,6 +2,7 @@ import { User } from "../models/user.model";
 import { registerSchemas } from "../schemas/registerSchema";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
+import { uploadOnCloudinary } from "../utils/cloudinary";
 import { dbHandler } from "../utils/dbHandler";
 
 const options = {
@@ -25,6 +26,15 @@ const generateAccessAndRefreshToken = async (id: string) => {
 
 const registerUser = dbHandler(async (req, res) => {
   const userDetails = req.body;
+
+  const localAvatarPath = req.file?.path;
+
+  if (!localAvatarPath) throw new ApiError(400, "Please upload an avatar");
+
+  const avatar = await uploadOnCloudinary(localAvatarPath);
+
+  if (!avatar) throw new ApiError(400, "Failed to upload avatar");
+
   const validatedUserDetails = registerSchemas.safeParse(userDetails);
 
   if (!validatedUserDetails.success)
@@ -33,7 +43,9 @@ const registerUser = dbHandler(async (req, res) => {
   const existedUser = await User.findOne({ email: userDetails.email });
 
   if (existedUser) throw new ApiError(400, "User already exists");
-  const createdUser = await User.create(userDetails);
+
+  const createdUser = await User.create({ ...userDetails, avatar: avatar.url });
+
   const user = await User.findById(createdUser._id);
 
   if (!user) throw new ApiError(400, "User not found");

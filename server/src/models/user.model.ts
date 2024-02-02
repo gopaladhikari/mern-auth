@@ -27,6 +27,12 @@ const userSchema = new Schema(
       lowercase: true,
       unique: true,
     },
+
+    avatar: {
+      type: String,
+      required: true,
+    },
+
     password: {
       type: String,
       required: true,

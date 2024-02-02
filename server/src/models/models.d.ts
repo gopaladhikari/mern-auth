@@ -5,10 +5,11 @@ interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
+  avatar: string;
+  refreshToken?: string;
   comparePassword: (password: string) => Promise<boolean>;
   generateAccessToken: () => string;
   generateRefreshToken: () => string;
-  refreshToken?: string;
 }
 
 export { IUser };
