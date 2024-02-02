@@ -8,6 +8,7 @@ interface IUser extends Document {
   comparePassword: (password: string) => Promise<boolean>;
   generateAccessToken: () => string;
   generateRefreshToken: () => string;
+  refreshToken?: string;
 }
 
 export { IUser };

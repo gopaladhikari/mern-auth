@@ -11,7 +11,6 @@ export default function UserSignUpForm() {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchemas),
@@ -29,7 +28,6 @@ export default function UserSignUpForm() {
           },
           body: JSON.stringify(data),
         });
-        console.log(res);
         if (!res.ok) throw new Error("Failed to register");
       })();
     });

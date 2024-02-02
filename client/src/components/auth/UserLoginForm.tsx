@@ -5,11 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchemas } from "../../schemas/loginSchema";
 import { z } from "zod";
 import { Link } from "react-router-dom";
-import { useTransition } from "react";
+import { useState } from "react";
 
 type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
+  const [isPending, setIsPending] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -18,10 +20,26 @@ export default function UserLoginForm() {
     resolver: zodResolver(loginSchemas),
   });
 
-  const [isPending, startTransition] = useTransition();
+  const onSubmit: SubmitHandler<FormData> = async (formData) => {
+    try {
+      setIsPending(false);
+      const res = await fetch("/api/v1/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error("Failed to login");
+    } catch (error) {
+      throw new Error("Failed to login");
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   return (
-    <form className="mt-4" onSubmit={() => {}}>
+    <form className="mt-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-6">
         <label htmlFor="email" className="block mb-2 text-sm font-medium ">
           Email
