@@ -3,9 +3,11 @@ import { registerSchemas } from "../schemas/registerSchema";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
 import { uploadOnCloudinary } from "../utils/cloudinary";
+import { CookieOptions } from "express";
 import { dbHandler } from "../utils/dbHandler";
 
-const options = {
+const options: CookieOptions = {
+  sameSite: "none",
   httpOnly: true,
   secure: true,
 };
@@ -46,7 +48,7 @@ const registerUser = dbHandler(async (req, res) => {
 
   const createdUser = await User.create({ ...userDetails, avatar: avatar.url });
 
-  const user = await User.findById(createdUser._id);
+  const user = await User.findById(createdUser._id).select("-password");
 
   if (!user) throw new ApiError(400, "User not found");
   return res

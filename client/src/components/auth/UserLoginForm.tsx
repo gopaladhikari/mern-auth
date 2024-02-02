@@ -1,20 +1,23 @@
-"use client";
-
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchemas } from "../../schemas/loginSchema";
 import { z } from "zod";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/slices/authSlice";
+import { User } from "../../types";
 
 type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
   const [isPending, setIsPending] = useState(false);
+  const dispatch = useDispatch();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(loginSchemas),
@@ -22,15 +25,34 @@ export default function UserLoginForm() {
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      setIsPending(false);
-      const res = await fetch("/api/v1/users/login", {
+      setIsPending(true);
+      const res = await fetch("/api/v1/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+      const { data }: { data: User } = await res.json();
       if (!res.ok) throw new Error("Failed to login");
+      reset();
+      const {
+        user: { _id, firstName, lastName, email, avatar },
+        accessToken,
+        refreshToken,
+      } = data;
+
+      dispatch(
+        login({
+          _id,
+          firstName,
+          lastName,
+          email,
+          avatar,
+          accessToken,
+          refreshToken,
+        })
+      );
     } catch (error) {
       throw new Error("Failed to login");
     } finally {

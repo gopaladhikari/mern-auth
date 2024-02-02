@@ -11,6 +11,7 @@ export default function UserSignUpForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchemas),
@@ -18,20 +19,13 @@ export default function UserSignUpForm() {
 
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit: SubmitHandler<FormData> = ({
-    email,
-    firstName,
-    lastName,
-    password,
-    avatar,
-  }) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     const formData = new FormData();
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("avatar", avatar[0]);
-    console.log(formData);
+    formData.append("firstName", data.firstName);
+    formData.append("lastName", data.lastName);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("avatar", data.avatar[0]);
     startTransition(() => {
       (async () => {
         const res = await fetch("/api/v1/user/register", {
@@ -39,8 +33,11 @@ export default function UserSignUpForm() {
           body: formData,
         });
         if (!res.ok) throw new Error("Failed to register");
+
         const data = await res.json();
+
         console.log("data", data);
+        reset();
       })();
     });
   };
@@ -162,7 +159,7 @@ export default function UserSignUpForm() {
           disabled={isPending}
           className="w-full bg-primary text-white py-3 font-bold rounded-lg hover:bg-white border-2 border-white transition-all duration-400 ease-in-out hover:border-[#e4e4e4] hover:text-primary"
         >
-          Sign up
+          {isPending ? "Loading..." : "Sign up"}
         </button>
       </form>
     </>
