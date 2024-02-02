@@ -69,7 +69,7 @@ export default function UserSignUpForm() {
             disabled={isPending}
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             {...register("lastName")}
-          />{" "}
+          />
           {errors.lastName && (
             <p className="text-red-600 p-1">{errors.lastName?.message}</p>
           )}

@@ -54,13 +54,11 @@ userSchema.methods.generateAccessToken = function () {
       lastName: this.lastName,
     },
     ACCESS_TOKEN_SECRET!,
-    { expiresIn: ACCESS_TOKEN_EXPIRY }
+    { expiresIn: ACCESS_TOKEN_EXPIRY! }
   );
-
   return token;
 };
 
-userSchema.methods.generateAccessToken = function () {};
 userSchema.methods.generateRefreshToken = function () {
   const token = jwt.sign(
     {

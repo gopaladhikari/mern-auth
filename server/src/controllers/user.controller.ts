@@ -57,7 +57,6 @@ const loginUser = dbHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     user._id
   );
-
   return res
     .status(200)
     .cookie("refreshToken", refreshToken, options)
