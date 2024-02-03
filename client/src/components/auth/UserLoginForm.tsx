@@ -9,8 +9,6 @@ import { login } from "../../redux/slices/authSlice";
 
 type FormData = z.infer<typeof loginSchemas>;
 
-const DB_URI = import.meta.env.VITE_DB_URI;
-
 export default function UserLoginForm() {
   const [isPending, setIsPending] = useState(false);
   const dispatch = useDispatch();
@@ -27,7 +25,7 @@ export default function UserLoginForm() {
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
       setIsPending(true);
-      const res = await fetch(`${DB_URI}/api/v1/user/login`, {
+      const res = await fetch("/api/v1/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
