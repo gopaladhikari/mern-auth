@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse";
 import { uploadOnCloudinary } from "../utils/cloudinary";
 import { CookieOptions } from "express";
 import { dbHandler } from "../utils/dbHandler";
+import { RequestWithUser } from "../models/models";
 
 const options: CookieOptions = {
   sameSite: "none",
@@ -73,8 +74,14 @@ const loginUser = dbHandler(async (req, res) => {
   );
   return res
     .status(200)
-    .cookie("refreshToken", refreshToken, options)
-    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, {
+      ...options,
+      maxAge: 1000 * 60 * 60 * 24,
+    })
+    .cookie("accessToken", accessToken, {
+      ...options,
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+    })
     .json(
       new ApiResponse(200, "User logged in successfully", {
         user,
@@ -84,4 +91,29 @@ const loginUser = dbHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser };
+const logoutUser = dbHandler(async (req, res) => {
+  res
+    .clearCookie("refreshToken")
+    .clearCookie("accessToken")
+    .json(new ApiResponse(200, "User logged out successfully"));
+});
+
+const getCurrentUser = dbHandler(async (req: RequestWithUser, res) => {
+  const _id = req.user?._id;
+
+  const user = await User.findByIdAndUpdate(
+    _id,
+    {
+      $unset: { refreshToken: 1 },
+    },
+    {
+      new: true,
+    }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User found successfully", { user }));
+});
+
+export { registerUser, loginUser, getCurrentUser, logoutUser };

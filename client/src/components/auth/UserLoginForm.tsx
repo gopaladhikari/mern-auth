@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
-import { User } from "../../types";
 
 type FormData = z.infer<typeof loginSchemas>;
 
@@ -33,26 +32,12 @@ export default function UserLoginForm() {
         },
         body: JSON.stringify(formData),
       });
-      const { data }: { data: User } = await res.json();
+      const {
+        data: { user },
+      } = await res.json();
       if (!res.ok) throw new Error("Failed to login");
       reset();
-      const {
-        user: { _id, firstName, lastName, email, avatar },
-        accessToken,
-        refreshToken,
-      } = data;
-
-      dispatch(
-        login({
-          _id,
-          firstName,
-          lastName,
-          email,
-          avatar,
-          accessToken,
-          refreshToken,
-        })
-      );
+      dispatch(login(user));
     } catch (error) {
       throw new Error("Failed to login");
     } finally {

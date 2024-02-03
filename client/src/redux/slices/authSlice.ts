@@ -6,8 +6,6 @@ type Payload = {
   lastName: string;
   email: string;
   avatar: string;
-  accessToken: string;
-  refreshToken: string;
 };
 
 type InitialState = Payload & {
@@ -21,8 +19,6 @@ const initialState: InitialState = {
   lastName: "",
   email: "",
   avatar: "",
-  accessToken: "",
-  refreshToken: "",
 };
 
 const authSlice = createSlice({
@@ -36,8 +32,6 @@ const authSlice = createSlice({
       state.lastName = action.payload.lastName;
       state.email = action.payload.email;
       state.avatar = action.payload.avatar;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
     },
     logout: () => initialState,
   },

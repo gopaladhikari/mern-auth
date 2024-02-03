@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { Document } from "mongoose";
 
 interface IUser extends Document {
@@ -12,4 +13,8 @@ interface IUser extends Document {
   generateRefreshToken: () => string;
 }
 
-export { IUser };
+interface RequestWithUser extends Request {
+  user?: IUser;
+}
+
+export { IUser, RequestWithUser };

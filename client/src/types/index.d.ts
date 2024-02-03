@@ -6,6 +6,6 @@ export type User = {
     email: string;
     avatar: string;
   };
-  accessToken: string;
-  refreshToken: string;
+  accessToken?: string;
+  refreshToken?: string;
 };
