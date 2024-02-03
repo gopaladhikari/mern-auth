@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { userRouter } from "./routes/user.route.js";
 
 const { CORS_ORIGIN } = process.env;
 const app = express();
@@ -21,8 +22,6 @@ app.get("/", (req, res) => {
 });
 
 // imports
-
-import { userRouter } from "./routes/user.route";
 
 app.use("/api/v1/user", userRouter);
 

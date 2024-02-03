@@ -1,9 +1,9 @@
 import { Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { dbHandler } from "../utils/dbHandler";
-import { ApiError } from "../utils/ApiError";
-import { User } from "../models/user.model";
-import { IUser } from "../models/models";
+import { IUser } from "../models/models.js";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { dbHandler } from "../utils/dbHandler.js";
 
 const { ACCESS_TOKEN_SECRET } = process.env;
 

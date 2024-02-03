@@ -1,5 +1,5 @@
 import { RequestHandler, Request, Response, NextFunction } from "express";
-import { RequestWithUser } from "../models/models";
+import { RequestWithUser } from "../models/models.js";
 
 export const dbHandler = (requestHandler: RequestHandler) => {
   return (req: Request | RequestWithUser, res: Response, next: NextFunction) =>

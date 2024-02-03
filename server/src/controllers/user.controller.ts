@@ -1,11 +1,11 @@
-import { User } from "../models/user.model";
-import { registerSchemas } from "../schemas/registerSchema";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import { uploadOnCloudinary } from "../utils/cloudinary";
 import { CookieOptions } from "express";
-import { dbHandler } from "../utils/dbHandler";
-import { RequestWithUser } from "../models/models";
+import { RequestWithUser } from "../models/models.js";
+import { User } from "../models/user.model.js";
+import { registerSchemas } from "../schemas/registerSchema.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { dbHandler } from "../utils/dbHandler.js";
 
 const options: CookieOptions = {
   sameSite: "none",

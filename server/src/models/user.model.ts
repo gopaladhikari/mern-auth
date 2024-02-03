@@ -1,7 +1,7 @@
 import { Model, model, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { IUser } from "./models";
+import { IUser } from "./models.js";
 
 const {
   ACCESS_TOKEN_SECRET,

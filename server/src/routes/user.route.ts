@@ -1,12 +1,12 @@
 import express from "express";
 import {
-  getCurrentUser,
-  loginUser,
-  logoutUser,
   registerUser,
-} from "../controllers/user.controller";
-import { upload } from "../middlewares/multer.middleware";
-import { verifyJWT } from "../middlewares/auth.middleware";
+  loginUser,
+  getCurrentUser,
+  logoutUser,
+} from "../controllers/user.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const userRouter = express.Router();
 
