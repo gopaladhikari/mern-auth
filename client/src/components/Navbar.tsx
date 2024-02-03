@@ -24,9 +24,12 @@ export default function Navbar() {
   }, [dispatch]);
 
   const handleLogout = async () => {
-    const res = await logoutUser();
-    if (!res.ok) throw new Error("Failed to logout");
-    dispatch(logout());
+    try {
+      const res = await logoutUser();
+      if (res.status) dispatch(logout());
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (isAuthenticated) {
@@ -37,7 +40,7 @@ export default function Navbar() {
             <NavLink to="/">Home</NavLink>
             <ul className="flex gap-4">
               <li>
-                <NavLink to="/profile">Profile</NavLink>
+                <NavLink to="/dashboard">Profile</NavLink>
               </li>
               <li>
                 <button type="button" onClick={handleLogout}>

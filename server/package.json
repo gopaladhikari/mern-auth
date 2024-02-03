@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config src/index.ts",
-    "build": "npx tsc -p ."
+    "build": "npx tsc",
+    "prestart": "npm run build",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
