@@ -11,7 +11,7 @@ const options: CookieOptions = {
   sameSite: "none",
   httpOnly: true,
   secure: true,
-  domain: "mern-auth-client-teal.vercel.app",
+  domain: "https://mern-auth-client-teal.vercel.app",
 };
 
 const generateAccessAndRefreshToken = async (id: string) => {
