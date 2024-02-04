@@ -7,10 +7,13 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { dbHandler } from "../utils/dbHandler.js";
 
+const { FRONTEND_DOMAIN } = process.env;
+
 const options: CookieOptions = {
   sameSite: "none",
   httpOnly: true,
   secure: true,
+  domain: FRONTEND_DOMAIN,
 };
 
 const generateAccessAndRefreshToken = async (id: string) => {
