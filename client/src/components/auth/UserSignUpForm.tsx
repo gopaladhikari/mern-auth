@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 type FormData = z.infer<typeof registerSchemas>;
 
+const dbUri = import.meta.env.VITE_DB_URI;
+
 export default function UserSignUpForm() {
   const {
     register,
@@ -28,15 +30,15 @@ export default function UserSignUpForm() {
     formData.append("avatar", data.avatar[0]);
     startTransition(() => {
       (async () => {
-        const res = await fetch("/api/v1/user/register", {
+        const res = await fetch(`${dbUri}/api/v1/user/register`, {
           method: "POST",
           body: formData,
         });
 
         if (!res.ok) throw new Error("Failed to register");
         const data = await res.json();
-
         console.log("data", data);
+
         reset();
       })();
     });

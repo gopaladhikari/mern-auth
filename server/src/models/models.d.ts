@@ -8,6 +8,11 @@ interface IUser extends Document {
   password: string;
   avatar: string;
   refreshToken?: string;
+  isVerified?: boolean;
+  forgotPasswordToken?: string;
+  forgotPasswordTokenExpiry?: Date;
+  emailVerificationToken?: string;
+  emailVerificationTokenExpiry?: Date;
   comparePassword: (password: string) => Promise<boolean>;
   generateAccessToken: () => string;
   generateRefreshToken: () => string;

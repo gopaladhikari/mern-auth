@@ -4,6 +4,7 @@
     "outDir": "dist",
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "removeComments": true,
     "strict": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext"

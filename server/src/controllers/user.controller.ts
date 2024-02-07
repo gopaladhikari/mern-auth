@@ -6,12 +6,11 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { dbHandler } from "../utils/dbHandler.js";
+import { sendEmail } from "../utils/emailSender.js";
 
 const options: CookieOptions = {
-  sameSite: "none",
   httpOnly: true,
   secure: true,
-  domain: "https://mern-auth-client-teal.vercel.app",
 };
 
 const generateAccessAndRefreshToken = async (id: string) => {
@@ -53,6 +52,8 @@ const registerUser = dbHandler(async (req, res) => {
   const user = await User.findById(createdUser._id).select("-password");
 
   if (!user) throw new ApiError(400, "User not found");
+  await sendEmail(user.email, "verify", user._id);
+
   return res
     .status(201)
     .json(new ApiResponse(201, "User created successfully", { user }));
@@ -111,10 +112,31 @@ const getCurrentUser = dbHandler(async (req: RequestWithUser, res) => {
       new: true,
     }
   ).select("-password");
-
   return res
     .status(200)
     .json(new ApiResponse(200, "User found successfully", { user }));
 });
 
-export { registerUser, loginUser, getCurrentUser, logoutUser };
+const verifyEmail = dbHandler(async (req, res) => {
+  try {
+    const { token } = req.query;
+    const user = await User.findOne({
+      verifyToken: token,
+      veriTokenExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) throw new ApiError(400, "Invalid token");
+    console.log(user);
+    user.isVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationTokenExpiry = undefined;
+    await user.save({ validateBeforeSave: false });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Email verified successfully", { user }));
+  } catch (error) {
+    throw new ApiError(500, "Failed to verify email");
+  }
+});
+
+export { registerUser, loginUser, getCurrentUser, logoutUser, verifyEmail };
