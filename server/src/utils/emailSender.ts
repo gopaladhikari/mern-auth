@@ -3,8 +3,7 @@ import { ApiError } from "./ApiError.js";
 import bcyrpt from "bcrypt";
 import nodemailer, { SendMailOptions } from "nodemailer";
 
-const { ETHEREAL_HOST, ETHEREAL_USER, ETHEREAL_DOMAIN, ETHEREAL_PASS } =
-  process.env;
+const { FRONTEND_DOMAIN } = process.env;
 
 type EmailType = "verify" | "reset";
 
@@ -44,7 +43,7 @@ export const sendEmail = async (
       from: '"Mern Auth 👻" <mern-auth@gmail.com>',
       to: `${userName}, ${email}`,
       subject: emailType === "verify" ? "Verify Email" : "Reset Password",
-      html: `<p> Click <a href="${ETHEREAL_DOMAIN}/${emailType}?token=${hashedToken}"> here </a> to ${
+      html: `<p> Click <a href="${FRONTEND_DOMAIN}/${emailType}?token=${hashedToken}"> here </a> to ${
         emailType === "verify" ? "Verify Email" : "Reset Password"
       }</p>`,
     };
