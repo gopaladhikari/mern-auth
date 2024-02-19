@@ -1,16 +1,18 @@
 import { CookieOptions } from "express";
-import { RequestWithUser } from "../models/models.js";
-import { User } from "../models/user.model.js";
-import { registerSchemas } from "../schemas/registerSchema.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { dbHandler } from "../utils/dbHandler.js";
-import { sendEmail } from "../utils/emailSender.js";
+import { RequestWithUser } from "../models/models";
+import { User } from "../models/user.model";
+import { registerSchemas } from "../schemas/registerSchema";
+import { ApiError } from "../utils/ApiError";
+import { ApiResponse } from "../utils/ApiResponse";
+import { uploadOnCloudinary } from "../utils/cloudinary";
+import { dbHandler } from "../utils/dbHandler";
+import { sendEmail } from "../utils/emailSender";
 
 const options: CookieOptions = {
 	httpOnly: true,
 	secure: true,
+	domain: process.env.FRONTEND_DOMAIN,
+	sameSite: "none",
 };
 
 const generateAccessAndRefreshToken = async (id: string) => {

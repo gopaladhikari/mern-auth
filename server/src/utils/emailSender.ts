@@ -1,7 +1,7 @@
-import { User } from "../models/user.model.js";
-import { ApiError } from "./ApiError.js";
 import bcyrpt from "bcrypt";
 import nodemailer, { SendMailOptions } from "nodemailer";
+import { User } from "../models/user.model";
+import { ApiError } from "./ApiError";
 
 const { FRONTEND_DOMAIN, USER, PASS } = process.env;
 type EmailType = "verify" | "reset";
