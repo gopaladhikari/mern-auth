@@ -11,14 +11,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use(
-	cors({
-		origin: CORS_ORIGIN!,
-		credentials: true,
-	})
+  cors({
+    origin: CORS_ORIGIN!,
+    credentials: true,
+  })
 );
 
 app.get("/", (req, res) => {
-	res.json({ message: "Hellofrom gopal!🦈" });
+  res.json({ message: "Hellofrom gopal!🦈" });
 });
 
 // imports

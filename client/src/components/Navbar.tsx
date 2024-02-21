@@ -1,31 +1,17 @@
 import { NavLink } from "react-router-dom";
-import { useEffect } from "react";
 import { useAppSelector } from "../redux/store";
-import { getCurrentUser } from "../lib/getCurrentUser";
 import { useDispatch } from "react-redux";
-import { login, logout } from "../redux/slices/authSlice";
+import { logout } from "../redux/slices/authSlice";
 import { logoutUser } from "../lib/logOutUser";
 
 export default function Navbar() {
   const dispatch = useDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const {
-          data: { user },
-        } = await getCurrentUser();
-        if (user) dispatch(login(user));
-      } catch (error) {
-        throw new Error("Failed to get current user");
-      }
-    })();
-  }, [dispatch]);
-
   const handleLogout = async () => {
     try {
       const res = await logoutUser();
+      console.log(res);
       if (res.status) dispatch(logout());
     } catch (error) {
       console.log(error);
