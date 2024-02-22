@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchemas } from "../../schemas/loginSchema";
 import { z } from "zod";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
@@ -12,7 +12,6 @@ type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
   const [isPending, setIsPending] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const {
@@ -31,7 +30,7 @@ export default function UserLoginForm() {
       if (res.statusText === "OK") {
         const user = res.data.data.user;
         dispatch(login(user));
-        navigate("/dashboard");
+        redirect("/dashboard");
       }
     } catch (error) {
       setError("root", {
