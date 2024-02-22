@@ -18,7 +18,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  res.json({ message: "Hellofrom gopal!🦈" });
+  res.json({ message: "Hello from gopal! 🦈" });
 });
 
 // imports
