@@ -1,10 +1,12 @@
 import { useEffect } from "react";
-import { redirect, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { axiosInstance } from "../conf/axios";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -14,7 +16,7 @@ export default function VerifyEmail() {
         });
         console.log(res);
 
-        if (res.statusText === "OK") redirect("/login");
+        if (res.statusText === "OK") navigate("/login");
       } catch (error) {
         throw new Error(`Failed to verify email ${error}`);
       }
