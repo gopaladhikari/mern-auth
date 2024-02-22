@@ -11,7 +11,7 @@ export const getMailUI = ({
   hashedToken,
   email,
 }: Props) => {
-  const url = `${frontendDomain}/${emailType}/verify/${hashedToken}`;
+  const url = `${frontendDomain}/${emailType}?token=${hashedToken}`;
   const heading =
     emailType === "verify"
       ? " Verify your email address"

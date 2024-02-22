@@ -28,7 +28,7 @@ export default function UserLoginForm() {
     try {
       setIsPending(true);
       const res = await axiosInstance.post("api/v1/user/login", formData);
-      if (res.status === 200) {
+      if (res.statusText === "OK") {
         const user = res.data.data.user;
         dispatch(login(user));
         navigate("/dashboard");
