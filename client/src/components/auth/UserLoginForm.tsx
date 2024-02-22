@@ -79,7 +79,10 @@ export default function UserLoginForm() {
         <p className="text-red-600 p-1">{errors.root?.message}</p>
       )}
       <div className="flex items-start">
-        <Link to="/forgot-password" className="text-[13px] italic underline">
+        <Link
+          to="/request-forgot-password"
+          className="text-[13px] italic underline"
+        >
           Forgot Password
         </Link>
       </div>

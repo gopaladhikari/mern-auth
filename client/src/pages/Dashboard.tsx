@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 
 export default function Dashboard() {
@@ -13,6 +14,8 @@ export default function Dashboard() {
           {firstName} {lastName}
         </p>
         <p>{email}</p>
+
+        <Link to="/change-password">Change password</Link>
       </div>
     </main>
   );

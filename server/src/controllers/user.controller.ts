@@ -157,11 +157,10 @@ const verifyEmail = dbHandler(async (req, res) => {
   }
 });
 
-const forgotPassword = dbHandler(async (req, res) => {
+const requestForgotPassword = dbHandler(async (req, res) => {
   const { email } = req.body;
-
   try {
-    const user = await User.findOne({ email }).select("-password");
+    const user = await User.findOne({ email });
     if (!user) throw new ApiError(400, "User not found");
     await sendEmail(user.email, "reset", user._id);
 
@@ -173,11 +172,35 @@ const forgotPassword = dbHandler(async (req, res) => {
   }
 });
 
+const resetPassword = dbHandler(async (req, res) => {
+  const { token, password, confirmPassword } = req.body;
+  console.log({ token, password, confirmPassword });
+
+  const user = await User.findOneAndUpdate(
+    {
+      forgotPasswordToken: token,
+      forgotPasswordTokenExpiry: { $gt: Date.now() },
+    },
+    {
+      $set: { password },
+      $unset: { forgotPasswordToken: 1, forgotPasswordTokenExpiry: 1 },
+    },
+    {
+      new: true,
+    }
+  ).select("-password");
+
+  if (!user) throw new ApiError(400, "Invalid token");
+
+  res.status(200).json(new ApiResponse(200, "Password reset successfully", {}));
+});
+
 export {
   registerUser,
   loginUser,
   getCurrentUser,
   logoutUser,
   verifyEmail,
-  forgotPassword,
+  requestForgotPassword,
+  resetPassword,
 };

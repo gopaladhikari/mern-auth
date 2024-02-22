@@ -3,7 +3,7 @@ import { FaLock } from "react-icons/fa";
 import { axiosInstance } from "../conf/axios";
 import { MdOutlineDone } from "react-icons/md";
 
-export default function ForgotPassword() {
+export default function RequestForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -16,9 +16,12 @@ export default function ForgotPassword() {
     e.preventDefault();
 
     try {
-      const res = await axiosInstance.post("/api/v1/user/forgot-password", {
-        email,
-      });
+      const res = await axiosInstance.post(
+        "/api/v1/user/request-forgot-password",
+        {
+          email,
+        }
+      );
       console.log(res);
       if (res.statusText === "OK") {
         setMessage(res.data.message);
