@@ -157,4 +157,27 @@ const verifyEmail = dbHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, getCurrentUser, logoutUser, verifyEmail };
+const forgotPassword = dbHandler(async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email }).select("-password");
+    if (!user) throw new ApiError(400, "User not found");
+    await sendEmail(user.email, "reset", user._id);
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Password reset email sent", {}));
+  } catch (error) {
+    throw new ApiError(500, "Internal server error");
+  }
+});
+
+export {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+  logoutUser,
+  verifyEmail,
+  forgotPassword,
+};

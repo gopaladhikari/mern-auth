@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { axiosInstance } from "./conf/axios";
 import { useDispatch } from "react-redux";
 import { login, logout } from "./redux/slices/authSlice";
+import ForgotPassword from "./pages/ForgotPassword";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="verify" element={<VerifyEmail />} />
+          <Route path="forgot-password" element={<ForgotPassword />} />
           <Route element={<PrivateRoutes />}>
             <Route path="dashboard" element={<Dashboard />} />
           </Route>
