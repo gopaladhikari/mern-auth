@@ -57,7 +57,7 @@ const registerUser = dbHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, "User created successfully", { user }));
+    .json(new ApiResponse(201, "Verfication email sent", { user }));
 });
 
 const loginUser = dbHandler(async (req, res) => {

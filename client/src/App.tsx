@@ -9,7 +9,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import { useEffect } from "react";
 import { axiosInstance } from "./conf/axios";
 import { useDispatch } from "react-redux";
-import { login } from "./redux/slices/authSlice";
+import { login, logout } from "./redux/slices/authSlice";
 
 export default function App() {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ export default function App() {
         if (res.status === 200) {
           const user = res.data.data.user;
           dispatch(login(user));
-        }
+        } else dispatch(logout());
       } catch (error) {
         console.error(error);
       }

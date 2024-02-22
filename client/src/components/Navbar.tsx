@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
-import { logoutUser } from "../lib/logOutUser";
+import { axiosInstance } from "../conf/axios";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -10,9 +10,8 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const res = await logoutUser();
-      console.log(res);
-      if (res.status) dispatch(logout());
+      const res = await axiosInstance.post("api/v1/user/logout");
+      if (res.status === 200) dispatch(logout());
     } catch (error) {
       console.log(error);
     }

@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchemas } from "../../schemas/loginSchema";
 import { z } from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
@@ -12,12 +12,13 @@ type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
   const [isPending, setIsPending] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const {
     register,
     handleSubmit,
-    reset,
+    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(loginSchemas),
@@ -30,10 +31,13 @@ export default function UserLoginForm() {
       if (res.status === 200) {
         const user = res.data.data.user;
         dispatch(login(user));
-        reset();
+        navigate("/dashboard");
       }
     } catch (error) {
-      console.log(error);
+      setError("root", {
+        type: "custom",
+        message: (error as Error).message ?? "Invalid email or password",
+      });
     } finally {
       setIsPending(false);
     }
@@ -71,8 +75,11 @@ export default function UserLoginForm() {
           <p className="text-red-600 p-1">{errors.password?.message}</p>
         )}
       </div>
+      {errors.root && (
+        <p className="text-red-600 p-1">{errors.root?.message}</p>
+      )}
       <div className="flex items-start">
-        <Link to="f/orgot-password" className="text-[13px] italic">
+        <Link to="/forgot-password" className="text-[13px] italic underline">
           Forgot Password
         </Link>
       </div>

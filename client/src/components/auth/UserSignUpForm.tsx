@@ -1,47 +1,46 @@
-import { useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { registerSchemas } from "../../schemas/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { axiosInstance } from "../../conf/axios";
+import { useState } from "react";
+import { MdOutlineDone } from "react-icons/md";
 
 type FormData = z.infer<typeof registerSchemas>;
 
-const dbUri = import.meta.env.VITE_DB_URI;
-
 export default function UserSignUpForm() {
+  const [message, setMessage] = useState("");
   const {
     register,
     handleSubmit,
+    setError,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchemas),
   });
 
-  const [isPending, startTransition] = useTransition();
-
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     const formData = new FormData();
     formData.append("firstName", data.firstName);
     formData.append("lastName", data.lastName);
     formData.append("email", data.email);
     formData.append("password", data.password);
     formData.append("avatar", data.avatar[0]);
-    startTransition(() => {
-      (async () => {
-        const res = await fetch(`${dbUri}/api/v1/user/register`, {
-          method: "POST",
-          body: formData,
-        });
 
-        if (!res.ok) throw new Error("Failed to register");
-        const data = await res.json();
-        console.log("data", data);
-
+    try {
+      const res = await axiosInstance.post("api/v1/user/register", formData);
+      if (res.status === 201) {
+        setMessage(res.data.message);
         reset();
-      })();
-    });
+      }
+    } catch (error) {
+      setError("root", {
+        type: "manual",
+        message: (error as Error).message ?? "Something went wrong",
+      });
+    }
   };
 
   return (
@@ -60,7 +59,7 @@ export default function UserSignUpForm() {
             id="avatar"
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             placeholder="John"
-            disabled={isPending}
+            disabled={isSubmitting}
             {...register("avatar")}
           />
           {errors.avatar && (
@@ -81,7 +80,7 @@ export default function UserSignUpForm() {
             id="firstName"
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             placeholder="John"
-            disabled={isPending}
+            disabled={isSubmitting}
             {...register("firstName")}
           />
           {errors.firstName && (
@@ -99,7 +98,7 @@ export default function UserSignUpForm() {
             type="text"
             id="lastName"
             placeholder="Doe"
-            disabled={isPending}
+            disabled={isSubmitting}
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             {...register("lastName")}
           />
@@ -118,7 +117,7 @@ export default function UserSignUpForm() {
             type="email"
             id="email"
             placeholder="example@example.com"
-            disabled={isPending}
+            disabled={isSubmitting}
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             {...register("email")}
           />{" "}
@@ -137,7 +136,7 @@ export default function UserSignUpForm() {
             type="password"
             id="password"
             placeholder="********"
-            disabled={isPending}
+            disabled={isSubmitting}
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             {...register("password")}
           />
@@ -150,6 +149,13 @@ export default function UserSignUpForm() {
           <p className="text-[red] mt-2 ml-1"> {errors.root.message} </p>
         )}
 
+        {message && (
+          <p className="text-emerald-700 mt-2 ml-1 bg-emerald-100 px-4 py-2 flex gap-2 items-center ">
+            <MdOutlineDone size={20} />
+            {message}
+          </p>
+        )}
+
         <p className="font-normal">
           Already have an account?&nbsp;
           <Link to="/login" className="font-medium">
@@ -158,10 +164,10 @@ export default function UserSignUpForm() {
         </p>
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isSubmitting}
           className="w-full bg-primary text-white py-3 font-bold rounded-lg hover:bg-white border-2 border-white transition-all duration-400 ease-in-out hover:border-[#e4e4e4] hover:text-primary"
         >
-          {isPending ? "Loading..." : "Sign up"}
+          {isSubmitting ? "Loading..." : "Sign up"}
         </button>
       </form>
     </>
