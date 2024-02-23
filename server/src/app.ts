@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import { userRouter } from "./routes/user.route";
 
-const { CORS_ORIGIN } = process.env;
+const { FRONTEND_DOMAIN } = process.env;
 const app = express();
 
 app.use(express.json());
@@ -12,7 +12,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: CORS_ORIGIN!,
+    origin: FRONTEND_DOMAIN!,
     credentials: true,
   })
 );
