@@ -7,6 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse";
 import { uploadOnCloudinary } from "../utils/cloudinary";
 import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
+import bcrypt from "bcrypt";
 
 const options: CookieOptions = {
   httpOnly: true,
@@ -98,7 +99,11 @@ const loginUser = dbHandler(async (req, res) => {
     );
 });
 
-const logoutUser = dbHandler(async (req, res) => {
+const logoutUser = dbHandler(async (req: RequestWithUser, res) => {
+  const id = req.user?._id;
+  await User.findByIdAndUpdate(id, {
+    $unset: { refreshToken: 1 },
+  });
   res
     .clearCookie("refreshToken")
     .clearCookie("accessToken")
@@ -128,9 +133,7 @@ const verifyEmail = dbHandler(async (req, res) => {
     const user = await User.findOneAndUpdate(
       {
         emailVerificationToken: token,
-        emailVerificationTokenExpiry: {
-          $gt: Date.now(),
-        },
+        emailVerificationTokenExpiry: { $gt: Date.now() },
       },
       {
         $set: { isVerified: true },
@@ -146,13 +149,10 @@ const verifyEmail = dbHandler(async (req, res) => {
 
     if (!user) throw new ApiError(400, "Invalid token");
 
-    return res.status(200).json(
-      new ApiResponse(200, "Email verified successfully", {
-        user,
-      })
-    );
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Email verified successfully", { user }));
   } catch (error) {
-    console.error(error); // Log the error for debugging purposes
     res.status(500).json(new ApiResponse(500, "Failed to verify email"));
   }
 });
@@ -174,7 +174,10 @@ const requestForgotPassword = dbHandler(async (req, res) => {
 
 const resetPassword = dbHandler(async (req, res) => {
   const { token, password, confirmPassword } = req.body;
-  console.log({ token, password, confirmPassword });
+
+  if (password !== confirmPassword)
+    throw new ApiError(400, "Passwords do not match");
+  if (!token) throw new ApiError(400, "Token is required");
 
   const user = await User.findOneAndUpdate(
     {
@@ -182,13 +185,10 @@ const resetPassword = dbHandler(async (req, res) => {
       forgotPasswordTokenExpiry: { $gt: Date.now() },
     },
     {
-      $set: { password },
+      $set: { password: await bcrypt.hash(password, 10) },
       $unset: { forgotPasswordToken: 1, forgotPasswordTokenExpiry: 1 },
-    },
-    {
-      new: true,
     }
-  ).select("-password");
+  );
 
   if (!user) throw new ApiError(400, "Invalid token");
 

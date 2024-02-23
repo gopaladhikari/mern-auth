@@ -7,13 +7,18 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
 import { axiosInstance } from "../../conf/axios";
+import { useAppSelector } from "../../redux/store";
 
 type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
-  const [isPending, setIsPending] = useState(false);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  if (isAuthenticated) navigate("/dashboard");
+
+  const [isPending, setIsPending] = useState(false);
 
   const {
     register,

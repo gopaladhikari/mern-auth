@@ -26,12 +26,16 @@ export const sendEmail = async (
       });
       userName = user?.firstName + " " + user?.lastName;
     } else if (emailType === "reset") {
-      const user = await User.findByIdAndUpdate(userId, {
-        $set: {
-          forgotPasswordToken: hashedToken,
-          forgotPasswordTokenExpiry: Date.now() + 3600000,
+      const user = await User.findByIdAndUpdate(
+        userId,
+        {
+          $set: {
+            forgotPasswordToken: hashedToken,
+            forgotPasswordTokenExpiry: Date.now() + 3600000,
+          },
         },
-      });
+        { new: true }
+      );
       userName = user?.firstName + " " + user?.lastName;
     }
 

@@ -22,7 +22,6 @@ export default function RequestForgotPassword() {
           email,
         }
       );
-      console.log(res);
       if (res.statusText === "OK") {
         setMessage(res.data.message);
         setEmail("");
