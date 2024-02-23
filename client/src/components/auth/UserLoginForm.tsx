@@ -33,6 +33,7 @@ export default function UserLoginForm() {
     try {
       setIsPending(true);
       const res = await axiosInstance.post("api/v1/user/login", formData);
+      console.log(res.headers["set-cookie"]);
       if (res.statusText === "OK") {
         const user = res.data.data.user;
         dispatch(login(user));
