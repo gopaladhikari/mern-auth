@@ -201,6 +201,36 @@ const resetPassword = dbHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Password reset successfully", {}));
 });
 
+const changePassword = dbHandler(async (req: RequestWithUser, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  switch (true) {
+    case !oldPassword:
+      throw new ApiError(400, "Old password is required");
+    case !newPassword:
+      throw new ApiError(400, "New password is required");
+    case !confirmPassword:
+      throw new ApiError(400, "Confirm password is required");
+    case newPassword !== confirmPassword:
+      throw new ApiError(400, "Passwords do not match");
+    default:
+      break;
+  }
+
+  const user = await User.findById(req.user?._id);
+
+  if (!user) throw new ApiError(400, "User not found");
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) throw new ApiError(400, "Old password is incorrect");
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Password changed successfully", { user }));
+});
+
 export {
   registerUser,
   loginUser,
@@ -209,4 +239,5 @@ export {
   verifyEmail,
   requestForgotPassword,
   resetPassword,
+  changePassword,
 };

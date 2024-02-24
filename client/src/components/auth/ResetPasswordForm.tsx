@@ -22,7 +22,7 @@ export default function ResetPasswordForm({ token }: { token: string | null }) {
   const onSubmit: SubmitHandler<TResetPasswordSchema> = async (formData) => {
     console.log(formData);
     try {
-      const res = await axiosInstance.post("/api/v1/user/reset-password", {
+      const res = await axiosInstance.post("/user/reset-password", {
         ...formData,
         token,
       });

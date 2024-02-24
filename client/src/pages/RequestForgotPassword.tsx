@@ -16,12 +16,9 @@ export default function RequestForgotPassword() {
     e.preventDefault();
 
     try {
-      const res = await axiosInstance.post(
-        "/api/v1/user/request-forgot-password",
-        {
-          email,
-        }
-      );
+      const res = await axiosInstance.post("/user/request-forgot-password", {
+        email,
+      });
       if (res.statusText === "OK") {
         setMessage(res.data.message);
         setEmail("");
