@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const res = await axiosInstance.post("api/v1/user/logout");
+      const res = await axiosInstance.post("/user/logout");
       if (res.status === 200) dispatch(logout());
     } catch (error) {
       console.log(error);

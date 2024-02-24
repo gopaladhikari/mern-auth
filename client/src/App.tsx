@@ -19,7 +19,7 @@ export default function App() {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const res = await axiosInstance.get("api/v1/user/get-current-user");
+        const res = await axiosInstance.get("/user/get-current-user");
         if (res.status === 200) {
           const user = res.data.data.user;
           dispatch(login(user));

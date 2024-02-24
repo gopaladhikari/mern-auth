@@ -30,7 +30,7 @@ export default function UserSignUpForm() {
     formData.append("avatar", data.avatar[0]);
 
     try {
-      const res = await axiosInstance.post("api/v1/user/register", formData);
+      const res = await axiosInstance.post("/user/register", formData);
       if (res.status === 201) {
         setMessage(res.data.message);
         reset();

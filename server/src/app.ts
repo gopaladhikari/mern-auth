@@ -5,6 +5,7 @@ import express from "express";
 import { userRouter } from "./routes/user.route";
 
 const { FRONTEND_DOMAIN } = process.env;
+
 const app = express();
 
 app.use(express.json());
@@ -18,7 +19,7 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.json({ message: "Hello from gopal! 🦈" });
 });
 
