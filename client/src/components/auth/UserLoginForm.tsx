@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchemas } from "../../schemas/loginSchema";
 import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
 import { axiosInstance } from "../../conf/axios";
@@ -18,20 +17,17 @@ export default function UserLoginForm() {
 
   if (isAuthenticated) navigate("/dashboard");
 
-  const [isPending, setIsPending] = useState(false);
-
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(loginSchemas),
   });
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     try {
-      setIsPending(true);
       const res = await axiosInstance.post("/user/login", formData);
       console.log(res.headers["set-cookie"]);
       if (res.statusText === "OK") {
@@ -44,8 +40,6 @@ export default function UserLoginForm() {
         type: "custom",
         message: (error as Error).message ?? "Invalid email or password",
       });
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -101,10 +95,10 @@ export default function UserLoginForm() {
       </p>
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isSubmitting}
         className="w-full bg-primary text-white font-bold text-lg my-4 py-2"
       >
-        {isPending ? "Logging in" : "Login"}
+        {isSubmitting ? "Logging in" : "Login"}
       </button>
     </form>
   );

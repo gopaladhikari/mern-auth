@@ -16,6 +16,7 @@ app.use(
   cors({
     origin: FRONTEND_DOMAIN!,
     credentials: true,
+    exposedHeaders: ["set-cookie"],
   })
 );
 

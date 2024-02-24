@@ -39,6 +39,7 @@ export function ChangePasswordForm() {
         }, 3000);
       } else dispatch(changePasswordSucess(false));
     } catch (error) {
+      dispatch(changePasswordSucess(false));
       setError("root", {
         type: "manual",
         message: (error as Error).message,
