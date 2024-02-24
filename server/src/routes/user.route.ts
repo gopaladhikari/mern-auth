@@ -7,6 +7,7 @@ import {
   logoutUser,
   requestForgotPassword,
   resetPassword,
+  changePassword,
 } from "../controllers/user.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
 import { upload } from "../middlewares/multer.middleware";
@@ -22,5 +23,6 @@ userRouter.route("/reset-password").post(resetPassword);
 // secured routes
 userRouter.route("/get-current-user").get(verifyJWT, getCurrentUser);
 userRouter.route("/logout").post(verifyJWT, logoutUser);
+userRouter.route("/change-password").post(verifyJWT, changePassword);
 
 export { userRouter };

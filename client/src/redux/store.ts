@@ -1,15 +1,15 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { authReducer } from "./slices/authSlice";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { changePasswordReducer } from "./slices/changePasswordSlice";
 
 const isDev = import.meta.env.DEV;
 
-const rootReducer = combineReducers({
-  auth: authReducer,
-});
-
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    auth: authReducer,
+    changePassword: changePasswordReducer,
+  },
   devTools: isDev,
 });
 
