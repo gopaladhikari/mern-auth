@@ -9,16 +9,10 @@ import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
 import bcrypt from "bcrypt";
 
-const { NODE_ENV } = process.env;
-
 const options: CookieOptions = {
   httpOnly: true,
   secure: true,
-  sameSite: "lax",
-  domain:
-    NODE_ENV === "development"
-      ? "localhost"
-      : "mern-auth-client-teal.vercel.app",
+  sameSite: "none",
 };
 
 const generateAccessAndRefreshToken = async (id: string) => {
