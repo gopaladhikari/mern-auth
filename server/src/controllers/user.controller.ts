@@ -12,7 +12,6 @@ import bcrypt from "bcrypt";
 const options: CookieOptions = {
   httpOnly: true,
   secure: true,
-  sameSite: "none",
 };
 
 const generateAccessAndRefreshToken = async (id: string) => {
