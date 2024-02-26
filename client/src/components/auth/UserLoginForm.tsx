@@ -8,12 +8,15 @@ import { login } from "../../redux/slices/authSlice";
 import { axiosInstance } from "../../conf/axios";
 import { useAppSelector } from "../../redux/store";
 import { useEffect } from "react";
+import { useCookies } from "react-cookie";
 
 type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [cookies, setCookie] = useCookies(["refreshToken", "accessToken"]);
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -33,12 +36,20 @@ export default function UserLoginForm() {
   });
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
+    const options = {
+      secure: true,
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: true,
+    };
+
     try {
       const res = await axiosInstance.post("/user/login", formData);
-      const { accessToken, refreshToken } = res.data.data;
-      console.log(accessToken, refreshToken);
       if (res.statusText === "OK") {
+        const { accessToken, refreshToken } = res.data.data;
         const user = res.data.data.user;
+        setCookie("refreshToken", refreshToken, options);
+        setCookie("accessToken", accessToken, options);
+        console.log(cookies);
         dispatch(login(user));
         navigate("/dashboard");
       }

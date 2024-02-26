@@ -1,4 +1,3 @@
-import { CookieOptions } from "express";
 import { RequestWithUser } from "../models/models";
 import { User } from "../models/user.model";
 import { registerSchemas } from "../schemas/registerSchema";
@@ -8,11 +7,6 @@ import { uploadOnCloudinary } from "../utils/cloudinary";
 import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
 import bcrypt from "bcrypt";
-
-const options: CookieOptions = {
-  httpOnly: true,
-  secure: true,
-};
 
 const generateAccessAndRefreshToken = async (id: string) => {
   const user = await User.findById(id);
@@ -79,23 +73,13 @@ const loginUser = dbHandler(async (req, res) => {
   const logginedUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
-  return res
-    .status(200)
-    .cookie("refreshToken", refreshToken, {
-      ...options,
-      maxAge: 1000 * 60 * 60 * 24,
+  return res.status(200).json(
+    new ApiResponse(200, "User logged in successfully", {
+      user: logginedUser,
+      accessToken,
+      refreshToken,
     })
-    .cookie("accessToken", accessToken, {
-      ...options,
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-    })
-    .json(
-      new ApiResponse(200, "User logged in successfully", {
-        user: logginedUser,
-        accessToken,
-        refreshToken,
-      })
-    );
+  );
 });
 
 const logoutUser = dbHandler(async (req: RequestWithUser, res) => {
