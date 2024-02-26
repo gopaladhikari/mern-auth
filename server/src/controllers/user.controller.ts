@@ -47,7 +47,6 @@ const registerUser = dbHandler(async (req, res) => {
 
   return res
     .status(201)
-    .header("Access-Control-Allow-Origin", String(FRONTEND_DOMAIN))
     .json(new ApiResponse(201, "Verfication email sent", { user }));
 });
 
