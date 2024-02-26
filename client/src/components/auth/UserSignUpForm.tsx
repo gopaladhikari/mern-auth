@@ -16,6 +16,7 @@ export default function UserSignUpForm() {
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchemas),
@@ -34,9 +35,10 @@ export default function UserSignUpForm() {
       const res = await axiosInstance.post("/user/register", formData);
       if (res.data) {
         setMessage(res.data.message);
+        reset();
         setTimeout(() => {
           navigate("/");
-        }, 60000);
+        }, 5000);
       }
     } catch (error) {
       setError("root", {
