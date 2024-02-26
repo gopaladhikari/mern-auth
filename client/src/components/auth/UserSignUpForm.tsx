@@ -1,5 +1,5 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { registerSchemas } from "../../schemas/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,11 +11,11 @@ type FormData = z.infer<typeof registerSchemas>;
 
 export default function UserSignUpForm() {
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     setError,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchemas),
@@ -34,7 +34,7 @@ export default function UserSignUpForm() {
       const res = await axiosInstance.post("/user/register", formData);
       if (res.data) {
         setMessage(res.data.message);
-        reset();
+        navigate("/");
       }
     } catch (error) {
       setError("root", {
