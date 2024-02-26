@@ -20,7 +20,7 @@ export default function App() {
     const fetchCurrentUser = async () => {
       try {
         const res = await axiosInstance.get("/user/get-current-user");
-        if (res.status === 200) {
+        if (res.data) {
           const user = res.data.data.user;
           dispatch(login(user));
         } else dispatch(logout());

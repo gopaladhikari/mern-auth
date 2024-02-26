@@ -27,7 +27,7 @@ export default function ResetPasswordForm({ token }: { token: string | null }) {
         token,
       });
 
-      if (res.statusText == "OK") {
+      if (res.data) {
         setSucess(true);
       }
     } catch (error) {

@@ -31,7 +31,7 @@ export function ChangePasswordForm() {
   const onSubmit: SubmitHandler<TPassowrd> = async (formData) => {
     try {
       const res = await axiosInstance.post("/user/change-password", formData);
-      if (res.statusText === "OK") {
+      if (res.data) {
         dispatch(changePasswordSucess(true));
         reset();
         dispatch(showChangePasswordForm());

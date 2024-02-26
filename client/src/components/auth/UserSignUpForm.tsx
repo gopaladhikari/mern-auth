@@ -31,7 +31,7 @@ export default function UserSignUpForm() {
 
     try {
       const res = await axiosInstance.post("/user/register", formData);
-      if (res.status === 201) {
+      if (res.data) {
         setMessage(res.data.message);
         reset();
       }

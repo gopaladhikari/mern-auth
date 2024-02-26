@@ -19,7 +19,7 @@ export default function RequestForgotPassword() {
       const res = await axiosInstance.post("/user/request-forgot-password", {
         email,
       });
-      if (res.statusText === "OK") {
+      if (res.data) {
         setMessage(res.data.message);
         setEmail("");
       }

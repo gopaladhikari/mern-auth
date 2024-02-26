@@ -16,7 +16,7 @@ export default function VerifyEmail() {
         });
         console.log(res);
 
-        if (res.statusText === "OK") navigate("/login");
+        if (res.data) navigate("/login");
       } catch (error) {
         throw new Error(`Failed to verify email ${error}`);
       }

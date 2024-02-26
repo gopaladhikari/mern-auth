@@ -36,15 +36,15 @@ export default function UserLoginForm() {
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     const options = {
-      httpOnly: true,
       secure: true,
       path: "/",
     };
 
     try {
       const res = await axiosInstance.post("/user/login", formData);
-      if (res.statusText === "OK") {
+      if (res.data) {
         const { accessToken, refreshToken, user } = res.data.data;
+        console.log({ accessToken, refreshToken, user });
 
         console.log("Before setCookie");
         setCookie("refreshToken", refreshToken, {
