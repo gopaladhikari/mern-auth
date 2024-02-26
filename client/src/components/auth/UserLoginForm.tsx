@@ -42,12 +42,9 @@ export default function UserLoginForm() {
 
     try {
       const res = await axiosInstance.post("/user/login", formData);
-      console.log(res);
       if (res.data) {
         const { accessToken, refreshToken, user } = res.data.data;
-        console.log({ accessToken, refreshToken, user });
 
-        console.log("Before setCookie");
         setCookie("refreshToken", refreshToken, {
           ...options,
           maxAge: 30 * 24 * 60 * 60,
@@ -56,7 +53,6 @@ export default function UserLoginForm() {
           ...options,
           maxAge: 24 * 60 * 60,
         });
-        console.log("After setCookie");
 
         dispatch(login(user));
         navigate("/dashboard");
