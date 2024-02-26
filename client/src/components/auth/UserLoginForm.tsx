@@ -16,14 +16,13 @@ export default function UserLoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [cookies, setCookie] = useCookies(["refreshToken", "accessToken"]);
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const [_, setCookie] = useCookies(["refreshToken", "accessToken"]);
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-    }
+    if (isAuthenticated) navigate("/dashboard");
   }, [isAuthenticated, navigate]);
 
   const {
@@ -38,8 +37,8 @@ export default function UserLoginForm() {
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     const options = {
       secure: true,
-      maxAge: 60 * 60 * 24 * 30,
       sameSite: true,
+      maxAge: 60 * 60 * 24 * 30,
     };
 
     try {
@@ -49,7 +48,6 @@ export default function UserLoginForm() {
         const user = res.data.data.user;
         setCookie("refreshToken", refreshToken, options);
         setCookie("accessToken", accessToken, options);
-        console.log(cookies);
         dispatch(login(user));
         navigate("/dashboard");
       }
