@@ -42,6 +42,7 @@ export default function UserLoginForm() {
 
     try {
       const res = await axiosInstance.post("/user/login", formData);
+      console.log(res);
       if (res.data) {
         const { accessToken, refreshToken, user } = res.data.data;
         console.log({ accessToken, refreshToken, user });
