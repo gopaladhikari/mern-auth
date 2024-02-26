@@ -12,10 +12,6 @@ import { useCookies } from "react-cookie";
 
 type FormData = z.infer<typeof loginSchemas>;
 
-const domain = import.meta.env.DEV
-  ? "localhost"
-  : "mern-auth-client-teal.vercel.app";
-
 export default function UserLoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,9 +36,9 @@ export default function UserLoginForm() {
 
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     const options = {
+      httpOnly: true,
       secure: true,
       path: "/",
-      domain,
     };
 
     try {
