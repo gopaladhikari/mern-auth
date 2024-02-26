@@ -34,7 +34,9 @@ export default function UserSignUpForm() {
       const res = await axiosInstance.post("/user/register", formData);
       if (res.data) {
         setMessage(res.data.message);
-        navigate("/");
+        setTimeout(() => {
+          navigate("/");
+        }, 60000);
       }
     } catch (error) {
       setError("root", {
