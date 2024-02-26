@@ -7,6 +7,8 @@ import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
 import bcrypt from "bcrypt";
 
+const { FRONTEND_DOMAIN } = process.env;
+
 const generateAccessAndRefreshToken = async (id: string) => {
   const user = await User.findById(id);
   if (!user) throw new ApiError(400, "User not found");
@@ -45,6 +47,7 @@ const registerUser = dbHandler(async (req, res) => {
 
   return res
     .status(201)
+    .header("Access-Control-Allow-Origin", String(FRONTEND_DOMAIN))
     .json(new ApiResponse(201, "Verfication email sent", { user }));
 });
 
