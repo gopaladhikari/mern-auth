@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  showOldPassword: false,
-  showNewPassword: false,
-  showConfirmPassword: false,
-  showChangePassword: false,
-  changePasswordSucess: false,
+  isShowOldPassword: false,
+  isShowNewPassword: false,
+  isshowConfirmPassword: false,
+  isShowChangePassword: false,
+  isChangePasswordSucess: false,
 };
 
 const changePasswordSlice = createSlice({
@@ -14,25 +14,25 @@ const changePasswordSlice = createSlice({
   reducers: {
     showNewPassword: (state) => ({
       ...state,
-      showNewPassword: !state.showNewPassword,
+      isShowNewPassword: !state.isShowNewPassword,
     }),
     showConfirmPassword: (state) => ({
       ...state,
-      showConfirmPassword: !state.showConfirmPassword,
+      isshowConfirmPassword: !state.isshowConfirmPassword,
     }),
     showChangePasswordForm: (state) => ({
       ...state,
-      showChangePassword: !state.showChangePassword,
+      isShowChangePassword: !state.isShowChangePassword,
     }),
 
     showOldPassword: (state) => ({
       ...state,
-      showOldPassword: !state.showOldPassword,
+      isShowOldPassword: !state.isShowOldPassword,
     }),
 
     changePasswordSucess: (state, action) => ({
       ...state,
-      changePasswordSucess: action.payload,
+      isChangePasswordSucess: action.payload,
     }),
   },
 });
