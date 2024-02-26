@@ -19,7 +19,8 @@ export default function UserLoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
-  }, [isAuthenticated, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     register,

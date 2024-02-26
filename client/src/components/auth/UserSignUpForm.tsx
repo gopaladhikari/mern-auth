@@ -28,6 +28,7 @@ export default function UserSignUpForm() {
     formData.append("email", data.email);
     formData.append("password", data.password);
     formData.append("avatar", data.avatar[0]);
+    formData.append("phoneNumber", data.phoneNumber);
 
     try {
       const res = await axiosInstance.post("/user/register", formData);
@@ -120,9 +121,29 @@ export default function UserSignUpForm() {
             disabled={isSubmitting}
             className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
             {...register("email")}
-          />{" "}
+          />
+
           {errors.email && (
             <p className="text-red-600 p-1">{errors.email?.message}</p>
+          )}
+        </div>
+        <div>
+          <label
+            htmlFor="phoneNumber"
+            className="block mb-2 text-sm font-medium  focus:border-b-primary "
+          >
+            Phone Number
+          </label>
+          <input
+            type="text"
+            id="phoneNumber"
+            placeholder="********"
+            disabled={isSubmitting}
+            className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
+            {...register("phoneNumber")}
+          />
+          {errors.phoneNumber && (
+            <p className="text-red-600 p-1">{errors.phoneNumber?.message}</p>
           )}
         </div>
         <div>
@@ -144,18 +165,15 @@ export default function UserSignUpForm() {
             <p className="text-red-600 p-1">{errors.password?.message}</p>
           )}
         </div>
-
         {errors.root && (
           <p className="text-[red] mt-2 ml-1"> {errors.root.message} </p>
         )}
-
         {message && (
           <p className="text-emerald-700 mt-2 ml-1 bg-emerald-100 px-4 py-2 flex gap-2 items-center ">
             <MdOutlineDone size={20} />
             {message}
           </p>
         )}
-
         <p className="font-normal">
           Already have an account?&nbsp;
           <Link to="/login" className="font-medium">

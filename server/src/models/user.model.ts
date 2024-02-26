@@ -28,6 +28,20 @@ const userSchema = new Schema(
       unique: true,
     },
 
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    phoneNumber: {
+      type: String,
+    },
+
+    isPhoneNumberVerified: {
+      type: Boolean,
+      default: false,
+    },
+
     avatar: {
       type: String,
       required: true,
@@ -37,10 +51,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
+
     emailVerificationToken: {
       type: String,
     },

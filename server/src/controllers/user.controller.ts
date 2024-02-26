@@ -1,6 +1,5 @@
 import { RequestWithUser } from "../models/models";
 import { User } from "../models/user.model";
-import { registerSchemas } from "../schemas/registerSchema";
 import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
 import { uploadOnCloudinary } from "../utils/cloudinary";
@@ -32,11 +31,6 @@ const registerUser = dbHandler(async (req, res) => {
   const avatar = await uploadOnCloudinary(localAvatarPath);
 
   if (!avatar) throw new ApiError(400, "Failed to upload avatar");
-
-  const validatedUserDetails = registerSchemas.safeParse(userDetails);
-
-  if (!validatedUserDetails.success)
-    throw new ApiError(400, "Invalid user credentials");
 
   const existedUser = await User.findOne({ email: userDetails.email });
 
@@ -117,7 +111,7 @@ const verifyEmail = dbHandler(async (req, res) => {
         emailVerificationTokenExpiry: { $gt: Date.now() },
       },
       {
-        $set: { isVerified: true },
+        $set: { isEmailVerified: true },
         $unset: {
           emailVerificationToken: 1,
           emailVerificationTokenExpiry: 1,
