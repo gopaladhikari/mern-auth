@@ -7,8 +7,6 @@ import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
 import bcrypt from "bcrypt";
 
-const { FRONTEND_DOMAIN } = process.env;
-
 const generateAccessAndRefreshToken = async (id: string) => {
   const user = await User.findById(id);
   if (!user) throw new ApiError(400, "User not found");
