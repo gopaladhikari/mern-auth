@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useAppSelector } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
-import { axiosInstance } from "../conf/axios";
+import { axiosInstance, cookieStore } from "../conf/axios";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -11,7 +11,11 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       const res = await axiosInstance.post("/user/logout");
-      if (res.data) dispatch(logout());
+      if (res.data) {
+        dispatch(logout());
+        cookieStore.remove("refreshToken");
+        cookieStore.remove("accessToken");
+      }
     } catch (error) {
       console.log(error);
     }

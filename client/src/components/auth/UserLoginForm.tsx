@@ -5,19 +5,15 @@ import { z } from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/slices/authSlice";
-import { axiosInstance } from "../../conf/axios";
+import { axiosInstance, cookieStore } from "../../conf/axios";
 import { useAppSelector } from "../../redux/store";
 import { useEffect } from "react";
-import { useCookies } from "react-cookie";
 
 type FormData = z.infer<typeof loginSchemas>;
 
 export default function UserLoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setCookie] = useCookies(["refreshToken", "accessToken"]);
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -45,14 +41,8 @@ export default function UserLoginForm() {
       if (res.data) {
         const { accessToken, refreshToken, user } = res.data.data;
 
-        setCookie("refreshToken", refreshToken, {
-          ...options,
-          maxAge: 30 * 24 * 60 * 60,
-        });
-        setCookie("accessToken", accessToken, {
-          ...options,
-          maxAge: 24 * 60 * 60,
-        });
+        cookieStore.set("refreshToken", refreshToken, options);
+        cookieStore.set("accessToken", accessToken, options);
 
         dispatch(login(user));
         navigate("/dashboard");

@@ -87,10 +87,8 @@ const logoutUser = dbHandler(async (req: RequestWithUser, res) => {
   await User.findByIdAndUpdate(id, {
     $unset: { refreshToken: 1 },
   });
-  res
-    .clearCookie("refreshToken")
-    .clearCookie("accessToken")
-    .json(new ApiResponse(200, "User logged out successfully"));
+
+  res.json(new ApiResponse(200, "User logged out successfully"));
 });
 
 const getCurrentUser = dbHandler(async (req: RequestWithUser, res) => {

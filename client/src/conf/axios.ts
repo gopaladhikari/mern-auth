@@ -2,9 +2,9 @@ import axios from "axios";
 
 import { Cookies } from "react-cookie";
 
-const cookie = new Cookies();
+export const cookieStore = new Cookies();
 
-const { accessToken } = cookie.getAll();
+const { accessToken } = cookieStore.getAll();
 
 const dbUri = import.meta.env.VITE_DB_URI;
 
