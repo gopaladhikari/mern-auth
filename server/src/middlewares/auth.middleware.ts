@@ -12,7 +12,7 @@ interface CustomRequest extends Request {
 }
 
 export const verifyJWT = dbHandler(async (req: CustomRequest, res, next) => {
-  const incomingAccessToken = req.cookies.accessToken;
+  const incomingAccessToken = req.headers.authorization?.replace("Bearer ", "");
 
   if (!incomingAccessToken) throw new ApiError(401, "Unauthorized request");
 

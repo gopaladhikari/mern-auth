@@ -16,7 +16,7 @@ export default function UserLoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setCookie] = useCookies(["refreshToken", "accessToken"]);
 
   const { isAuthenticated } = useAppSelector((state) => state.auth);
