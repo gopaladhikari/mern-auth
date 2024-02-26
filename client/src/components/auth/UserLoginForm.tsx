@@ -12,6 +12,10 @@ import { useCookies } from "react-cookie";
 
 type FormData = z.infer<typeof loginSchemas>;
 
+const domain = import.meta.env.DEV
+  ? "localhost"
+  : "mern-auth-client-teal.vercel.app";
+
 export default function UserLoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,17 +41,26 @@ export default function UserLoginForm() {
   const onSubmit: SubmitHandler<FormData> = async (formData) => {
     const options = {
       secure: true,
-      sameSite: true,
-      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+      domain,
     };
 
     try {
       const res = await axiosInstance.post("/user/login", formData);
       if (res.statusText === "OK") {
-        const { accessToken, refreshToken } = res.data.data;
-        const user = res.data.data.user;
-        setCookie("refreshToken", refreshToken, options);
-        setCookie("accessToken", accessToken, options);
+        const { accessToken, refreshToken, user } = res.data.data;
+
+        console.log("Before setCookie");
+        setCookie("refreshToken", refreshToken, {
+          ...options,
+          maxAge: 30 * 24 * 60 * 60,
+        });
+        setCookie("accessToken", accessToken, {
+          ...options,
+          maxAge: 24 * 60 * 60,
+        });
+        console.log("After setCookie");
+
         dispatch(login(user));
         navigate("/dashboard");
       }
