@@ -56,6 +56,9 @@ const loginUser = dbHandler(async (req, res) => {
 
   if (!user) throw new ApiError(400, "User not found");
 
+  if (!user.isEmailVerified)
+    throw new ApiError(400, "Please verify your email first");
+
   const isMatch = await user.comparePassword(password);
 
   if (!isMatch) throw new ApiError(400, "Invalid credentials");
