@@ -12,6 +12,8 @@ interface IUser extends Document {
   isEmailVerified?: boolean;
   phoneNumber: string;
   isPhoneNumberVerified?: boolean;
+  otp: string;
+  otpSent: boolean;
   forgotPasswordToken?: string;
   forgotPasswordTokenExpiry?: Date;
   emailVerificationToken?: string;

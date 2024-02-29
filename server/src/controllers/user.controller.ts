@@ -6,6 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary";
 import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
 import bcrypt from "bcrypt";
+import { sendSms } from "../utils/sendSms";
 
 const generateAccessAndRefreshToken = async (id: string) => {
   const user = await User.findById(id);
@@ -68,7 +69,7 @@ const loginUser = dbHandler(async (req, res) => {
   );
 
   const logginedUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken -otp"
   );
   return res.status(200).json(
     new ApiResponse(200, "User logged in successfully", {
@@ -203,6 +204,66 @@ const changePassword = dbHandler(async (req: RequestWithUser, res) => {
     .json(new ApiResponse(200, "Password changed successfully", { user }));
 });
 
+const requestVerifyPhoneNumber = dbHandler(
+  async (req: RequestWithUser, res) => {
+    try {
+      const { phoneNumber } = req.body;
+
+      if (!phoneNumber) throw new ApiError(400, "Phone number is required");
+
+      const otp = Math.floor(Math.random() * 900000 + 100000).toString();
+
+      const message = await sendSms(phoneNumber, otp);
+
+      if (!message) throw new ApiError(500, "Failed to send SMS");
+
+      const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+          $set: { otp, otpSent: true },
+        },
+        {
+          new: true,
+        }
+      );
+
+      res
+        .status(200)
+        .json(new ApiResponse(200, "Verification code successfully", { user }));
+    } catch (error) {
+      throw new ApiError(500, "Internal server error");
+    }
+  }
+);
+
+const verifyPhoneNumber = dbHandler(async (req: RequestWithUser, res) => {
+  const userOtp = req.user?.otp;
+
+  const { otp } = req.body;
+
+  if (!otp) throw new ApiError(400, "OTP is required");
+
+  if (userOtp !== otp) throw new ApiError(400, "Invalid OTP");
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: { isPhoneNumberVerified: true },
+      $unset: {
+        otp: 1,
+        otpSent: 1,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "OTP verified successfully", { user }));
+});
+
 export {
   registerUser,
   loginUser,
@@ -212,4 +273,6 @@ export {
   requestForgotPassword,
   resetPassword,
   changePassword,
+  requestVerifyPhoneNumber,
+  verifyPhoneNumber,
 };

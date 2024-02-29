@@ -2,13 +2,19 @@ import { useAppSelector } from "../redux/store";
 import { useDispatch } from "react-redux";
 import { showChangePasswordForm } from "../redux/slices/changePasswordSlice";
 import { ChangePasswordForm } from "../components/auth/ChangePasswordForm";
+import { VerifyPhoneNumber } from "../components/auth/VerifyPhoneNumber";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
 
-  const { firstName, lastName, avatar, email } = useAppSelector(
-    (state) => state.auth
-  );
+  const {
+    firstName,
+    lastName,
+    avatar,
+    email,
+    phoneNumber,
+    isPhoneNumberVerified,
+  } = useAppSelector((state) => state.auth);
 
   const { isShowChangePassword, isChangePasswordSucess } = useAppSelector(
     (state) => state.changePassword
@@ -23,6 +29,16 @@ export default function Dashboard() {
           {firstName} {lastName}
         </p>
         <p>{email}</p>
+        <p>
+          +{phoneNumber}
+          <span
+            className={`${
+              isPhoneNumberVerified ? "text-green-500" : "text-red-500"
+            } mx-3`}
+          >
+            {isPhoneNumberVerified ? "✅" : "❌"}
+          </span>
+        </p>
 
         {isShowChangePassword && <ChangePasswordForm />}
 
@@ -32,7 +48,11 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="mt-12">
+        {!isPhoneNumberVerified && (
+          <VerifyPhoneNumber phoneNumber={phoneNumber} />
+        )}
+
+        <div className="mt-6">
           <button
             type="button"
             className={`${
