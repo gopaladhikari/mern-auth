@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "../../conf/axios";
 import { useState } from "react";
 import { MdOutlineDone } from "react-icons/md";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 type FormData = z.infer<typeof registerSchemas>;
 
@@ -17,6 +19,7 @@ export default function UserSignUpForm() {
     handleSubmit,
     setError,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(registerSchemas),
@@ -138,13 +141,10 @@ export default function UserSignUpForm() {
           >
             Phone Number
           </label>
-          <input
-            type="text"
-            id="phoneNumber"
-            placeholder="********"
-            disabled={isSubmitting}
-            className="block w-full p-2.5 focus:outline-none focus:border-b-primary bg-transparent border"
-            {...register("phoneNumber")}
+          <PhoneInput
+            inputClass="!w-full"
+            country={"us"}
+            onChange={(value) => setValue("phoneNumber", value)}
           />
           {errors.phoneNumber && (
             <p className="text-red-600 p-1">{errors.phoneNumber?.message}</p>
