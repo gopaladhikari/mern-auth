@@ -6,6 +6,8 @@ type Payload = {
   lastName: string;
   email: string;
   avatar: string;
+  phoneNumber: string;
+  isPhoneNumberVerified: boolean;
 };
 
 type InitialState = Payload & {
@@ -19,6 +21,8 @@ const initialState: InitialState = {
   lastName: "",
   email: "",
   avatar: "",
+  phoneNumber: "",
+  isPhoneNumberVerified: false,
 };
 
 const authSlice = createSlice({
