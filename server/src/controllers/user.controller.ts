@@ -69,7 +69,7 @@ const loginUser = dbHandler(async (req, res) => {
   );
 
   const logginedUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-password -refreshToken -otp"
   );
   return res.status(200).json(
     new ApiResponse(200, "User logged in successfully", {
@@ -217,12 +217,10 @@ const requestVerifyPhoneNumber = dbHandler(
 
       if (!message) throw new ApiError(500, "Failed to send SMS");
 
-      console.log("otp", otp);
-
       const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
-          $set: { otp },
+          $set: { otp, otpSent: true },
         },
         {
           new: true,
@@ -238,8 +236,33 @@ const requestVerifyPhoneNumber = dbHandler(
   }
 );
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const verifyPhoneNumber = dbHandler(async (req, res) => {});
+const verifyPhoneNumber = dbHandler(async (req: RequestWithUser, res) => {
+  const userOtp = req.user?.otp;
+
+  const { otp } = req.body;
+
+  if (!otp) throw new ApiError(400, "OTP is required");
+
+  if (userOtp !== otp) throw new ApiError(400, "Invalid OTP");
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: { isPhoneNumberVerified: true },
+      $unset: {
+        otp: 1,
+        otpSent: 1,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "OTP verified successfully", { user }));
+});
 
 export {
   registerUser,

@@ -49,6 +49,11 @@ const userSchema = new Schema(
       type: String,
     },
 
+    otpSent: {
+      type: Boolean,
+      default: false,
+    },
+
     avatar: {
       type: String,
       required: true,

@@ -14,7 +14,6 @@ export default function VerifyEmail() {
         const res = await axiosInstance.post("/user/verify-email", {
           token,
         });
-        console.log(res);
 
         if (res.data) navigate("/login");
       } catch (error) {

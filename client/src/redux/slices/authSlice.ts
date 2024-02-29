@@ -8,6 +8,7 @@ type Payload = {
   avatar: string;
   phoneNumber: string;
   isPhoneNumberVerified: boolean;
+  otpSent: boolean;
 };
 
 type InitialState = Payload & {
@@ -23,6 +24,7 @@ const initialState: InitialState = {
   avatar: "",
   phoneNumber: "",
   isPhoneNumberVerified: false,
+  otpSent: false,
 };
 
 const authSlice = createSlice({
@@ -35,8 +37,19 @@ const authSlice = createSlice({
       isAuthenticated: true,
     }),
     logout: () => initialState,
+
+    setOtpSent: (state, action: PayloadAction<boolean>) => ({
+      ...state,
+      otpSent: action.payload,
+    }),
+
+    setIsPhoneNumberVerified: (state, action: PayloadAction<boolean>) => ({
+      ...state,
+      isPhoneNumberVerified: action.payload,
+    }),
   },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setOtpSent, setIsPhoneNumberVerified } =
+  authSlice.actions;
 export const authReducer = authSlice.reducer;

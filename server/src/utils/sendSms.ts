@@ -12,8 +12,6 @@ export const sendSms = async (phoneNumber: string, otp: string) => {
       to: `+${phoneNumber}`,
     });
 
-    console.log("twilio message", message);
-
     return message;
   } catch (error) {
     console.log("twilio error", error);
