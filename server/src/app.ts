@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-console.log(env);
+console.log("env", env);
 
 app.use(
   cors({
