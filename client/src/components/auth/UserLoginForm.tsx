@@ -42,8 +42,14 @@ export default function UserLoginForm() {
       if (res.data) {
         const { accessToken, refreshToken, user } = res.data.data;
 
-        cookieStore.set("refreshToken", refreshToken, options);
-        cookieStore.set("accessToken", accessToken, options);
+        cookieStore.set("refreshToken", refreshToken, {
+          ...options,
+          maxAge: 24 * 60 * 60,
+        });
+        cookieStore.set("accessToken", accessToken, {
+          ...options,
+          maxAge: 4 * 60 * 60,
+        });
 
         dispatch(login(user));
         navigate("/dashboard");
