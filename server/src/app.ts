@@ -2,8 +2,7 @@ import cors from "cors";
 import express from "express";
 
 import { userRouter } from "./routes/user.route";
-
-const { FRONTEND_DOMAIN } = process.env;
+import { env } from "./conf/env";
 
 const app = express();
 
@@ -13,7 +12,7 @@ app.use(express.static("public"));
 
 app.use(
   cors({
-    origin: FRONTEND_DOMAIN!,
+    origin: env.frontendDomain,
     credentials: true,
   })
 );

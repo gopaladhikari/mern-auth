@@ -3,8 +3,10 @@ import nodemailer, { SendMailOptions } from "nodemailer";
 import { User } from "../models/user.model";
 import { ApiError } from "./ApiError";
 import { getMailUI } from "./sendMailUI";
+import { env } from "../conf/env";
 
-const { FRONTEND_DOMAIN, USER, PASS } = process.env;
+const { frontendDomain, user, pass } = env;
+
 type EmailType = "verify" | "reset";
 
 export const sendEmail = async (
@@ -43,10 +45,7 @@ export const sendEmail = async (
       service: "gmail",
       host: "smtp.gmail.com",
       port: 587,
-      auth: {
-        user: USER,
-        pass: PASS,
-      },
+      auth: { user, pass },
     });
 
     const mailOptions: SendMailOptions = {
@@ -56,7 +55,7 @@ export const sendEmail = async (
       html: getMailUI({
         email,
         emailType,
-        frontendDomain: String(FRONTEND_DOMAIN),
+        frontendDomain,
         hashedToken,
       }),
     };

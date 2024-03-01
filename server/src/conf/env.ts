@@ -15,15 +15,17 @@ const {
   TWILO_TOKEN,
   PHONE_NUMBER,
   TWILIO_FROM_PHONE_NUMBER,
+  PORT,
 } = process.env;
 
 export const env = {
-  mongoUri: String(MONGO_URI),
+  port: Number(PORT) || 8000,
+  mongoUri: String(MONGO_URI) || 8000,
   accessTokenSecret: String(ACCESS_TOKEN_SECRET),
   accessTokenExpiry: String(ACCESS_TOKEN_EXPIRY),
   refreshTokenSecret: String(REFRESH_TOKEN_SECRET),
   refreshTokenExpiry: String(REFRESH_TOKEN_EXPIRY),
-  coludinaryName: String(CLOUDINARY_CLOUD_NAME),
+  cloudinaryName: String(CLOUDINARY_CLOUD_NAME),
   cloudinaryApi: String(CLOUDINARY_API_KEY),
   cloudinarySecretKey: String(CLOUDINARY_SECRET_KEY),
   frontendDomain: String(FRONTEND_DOMAIN),

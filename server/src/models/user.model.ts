@@ -2,13 +2,14 @@ import { Schema, Model, model } from "mongoose";
 import { IUser } from "./models";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { env } from "../conf/env";
 
 const {
-  ACCESS_TOKEN_SECRET,
-  ACCESS_TOKEN_EXPIRY,
-  REFRESH_TOKEN_SECRET,
-  REFRESH_TOKEN_EXPIRY,
-} = process.env;
+  accessTokenSecret,
+  accessTokenExpiry,
+  refreshTokenSecret,
+  refreshTokenExpiry,
+} = env;
 
 const userSchema = new Schema(
   {
@@ -101,8 +102,8 @@ userSchema.methods.generateAccessToken = function () {
       firstName: this.firstName,
       lastName: this.lastName,
     },
-    ACCESS_TOKEN_SECRET!,
-    { expiresIn: ACCESS_TOKEN_EXPIRY! }
+    accessTokenSecret,
+    { expiresIn: accessTokenExpiry }
   );
   return token;
 };
@@ -112,9 +113,9 @@ userSchema.methods.generateRefreshToken = function () {
     {
       _id: this._id,
     },
-    REFRESH_TOKEN_SECRET!,
+    refreshTokenSecret,
     {
-      expiresIn: REFRESH_TOKEN_EXPIRY,
+      expiresIn: refreshTokenExpiry,
     }
   );
 

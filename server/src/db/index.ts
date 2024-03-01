@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-
-const { MONGO_URI } = process.env;
+import { env } from "../conf/env";
 
 export const connectDB = async () => {
   try {
-    const connection = await mongoose.connect(`${MONGO_URI}/mern-auth`);
+    const connection = await mongoose.connect(`${env.mongoUri}/mern-auth`);
     console.log("Mongodb connected", connection.connection.host);
   } catch (error) {
     console.log("Mongodb connection failed", error);
