@@ -13,7 +13,6 @@ const {
   PASS,
   TWILO_SID,
   TWILO_TOKEN,
-  PHONE_NUMBER,
   TWILIO_FROM_PHONE_NUMBER,
   PORT,
 } = process.env;
@@ -34,6 +33,5 @@ export const env = {
   pass: String(PASS),
   twilioSid: String(TWILO_SID),
   twilioToken: String(TWILO_TOKEN),
-  phoneNumber: String(PHONE_NUMBER),
   twilioFrom: String(TWILIO_FROM_PHONE_NUMBER),
 };
