@@ -12,3 +12,6 @@ connectDB().then(() => {
     console.log(`Server started on port ${port}`);
   });
 });
+
+// TODO: Add login with google
+// TODO: Delete account
