@@ -24,6 +24,10 @@ app.get("/", (_, res) => {
   res.json({ message: "Hello from gopal! 🦈" });
 });
 
+app.get("/health-check", (_, res) => {
+  res.json({ message: "OK" });
+});
+
 // imports
 
 app.use("/api/v1/user", userRouter);

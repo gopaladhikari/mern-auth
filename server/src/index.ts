@@ -7,7 +7,11 @@ config();
 const port = process.env.PORT || 8000;
 
 connectDB().then(() => {
-	app.listen(port, () => {
-		console.log(`Server started on port ${port}`);
-	});
+  app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+  });
 });
+
+// TODO: Add login with google, github, facebook
+// TODO: Add payment integration, eSewa, Khalti for now
+
