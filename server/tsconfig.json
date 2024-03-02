@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
+    "module": "NodeNext",
     "outDir": "dist",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "removeComments": true,
     "strict": true,
-    "module": "NodeNext",
     "moduleResolution": "NodeNext"
   },
   "include": ["src/**/*"]

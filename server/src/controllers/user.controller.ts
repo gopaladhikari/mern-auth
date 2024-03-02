@@ -11,106 +11,129 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { env } from "../conf/env";
 
 const generateAccessAndRefreshToken = async (id: string) => {
-  const user = await User.findById(id);
-  if (!user) throw new ApiError(400, "User not found");
+  try {
+    const user = await User.findById(id);
+    if (!user) throw new ApiError(400, "User not found");
 
-  const accessToken = user.generateAccessToken();
-  const refreshToken = user.generateRefreshToken();
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
-  user.refreshToken = refreshToken;
+    user.refreshToken = refreshToken;
 
-  await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
-  return { accessToken, refreshToken };
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 };
 
 const registerUser = dbHandler(async (req, res) => {
   const userDetails = req.body;
-
   const localAvatarPath = req.file?.path;
-
   if (!localAvatarPath) throw new ApiError(400, "Please upload an avatar");
 
-  const avatar = await uploadOnCloudinary(localAvatarPath);
+  try {
+    const avatar = await uploadOnCloudinary(localAvatarPath);
 
-  if (!avatar) throw new ApiError(400, "Failed to upload avatar");
+    if (!avatar) throw new ApiError(400, "Failed to upload avatar");
 
-  const existedUser = await User.findOne({ email: userDetails.email });
+    const existedUser = await User.findOne({ email: userDetails.email });
 
-  if (existedUser) throw new ApiError(400, "User already exists");
+    if (existedUser) throw new ApiError(400, "User already exists");
 
-  const createdUser = await User.create({ ...userDetails, avatar: avatar.url });
+    const createdUser = await User.create({
+      ...userDetails,
+      avatar: avatar.url,
+    });
 
-  const user = await User.findById(createdUser._id).select("-password");
+    const user = await User.findById(createdUser._id).select("-password");
 
-  if (!user) throw new ApiError(400, "User not found");
-  await sendEmail(user.email, "verify", user._id);
+    if (!user) throw new ApiError(400, "User not found");
+    await sendEmail(user.email, "verify", user._id);
 
-  return res
-    .status(201)
-    .json(new ApiResponse(201, "Verfication email sent", { user }));
+    res
+      .status(201)
+      .json(new ApiResponse(201, "Verfication email sent", { user }));
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const loginUser = dbHandler(async (req, res) => {
   const { email, password } = req.body;
+
   if (!email || !password) throw new ApiError(400, "Invalid credentials");
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-  if (!user) throw new ApiError(400, "User not found");
+    if (!user) throw new ApiError(400, "User not found");
 
-  if (!user.isEmailVerified)
-    throw new ApiError(400, "Please verify your email first");
+    if (!user.isEmailVerified)
+      throw new ApiError(400, "Please verify your email first");
 
-  const isMatch = await user.comparePassword(password);
+    const isMatch = await user.comparePassword(password);
 
-  if (!isMatch) throw new ApiError(400, "Invalid credentials");
+    if (!isMatch) throw new ApiError(400, "Invalid credentials");
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id
-  );
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id
+    );
 
-  const logginedUser = await User.findById(user._id).select(
-    "-password -refreshToken -otp"
-  );
-  return res.status(200).json(
-    new ApiResponse(200, "User logged in successfully", {
-      user: logginedUser,
-      accessToken,
-      refreshToken,
-    })
-  );
+    const logginedUser = await User.findById(user._id).select(
+      "-password -refreshToken -otp"
+    );
+    res.status(200).json(
+      new ApiResponse(200, "User logged in successfully", {
+        user: logginedUser,
+        accessToken,
+        refreshToken,
+      })
+    );
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const logoutUser = dbHandler(async (req: RequestWithUser, res) => {
-  const id = req.user?._id;
-  await User.findByIdAndUpdate(id, {
-    $unset: { refreshToken: 1 },
-  });
+  try {
+    const id = req.user?._id;
+    await User.findByIdAndUpdate(id, {
+      $unset: { refreshToken: 1 },
+    });
 
-  res.json(new ApiResponse(200, "User logged out successfully"));
+    res.json(new ApiResponse(200, "User logged out successfully"));
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const getCurrentUser = dbHandler(async (req: RequestWithUser, res) => {
   const _id = req.user?._id;
 
-  const user = await User.findByIdAndUpdate(
-    _id,
-    {
-      $unset: { refreshToken: 1 },
-    },
-    {
-      new: true,
-    }
-  ).select("-password");
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "User found successfully", { user }));
+  try {
+    const user = await User.findByIdAndUpdate(
+      _id,
+      {
+        $unset: { refreshToken: 1 },
+      },
+      {
+        new: true,
+      }
+    ).select("-password");
+    res
+      .status(200)
+      .json(new ApiResponse(200, "User found successfully", { user }));
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const verifyEmail = dbHandler(async (req, res) => {
+  const { token } = req.body;
+
   try {
-    const { token } = req.body;
     const user = await User.findOneAndUpdate(
       {
         emailVerificationToken: token,
@@ -130,26 +153,25 @@ const verifyEmail = dbHandler(async (req, res) => {
 
     if (!user) throw new ApiError(400, "Invalid token");
 
-    return res
+    res
       .status(200)
       .json(new ApiResponse(200, "Email verified successfully", { user }));
   } catch (error) {
-    res.status(500).json(new ApiResponse(500, "Failed to verify email"));
+    throw new ApiError(500, `Internal Server Error ${error}`);
   }
 });
 
 const requestForgotPassword = dbHandler(async (req, res) => {
   const { email } = req.body;
+
   try {
     const user = await User.findOne({ email });
     if (!user) throw new ApiError(400, "User not found");
     await sendEmail(user.email, "reset", user._id);
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, "Password reset email sent", {}));
+    res.status(200).json(new ApiResponse(200, "Password reset email sent", {}));
   } catch (error) {
-    throw new ApiError(500, "Internal server error");
+    throw new ApiError(500, `Internal Server Error ${error}`);
   }
 });
 
@@ -160,20 +182,26 @@ const resetPassword = dbHandler(async (req, res) => {
     throw new ApiError(400, "Passwords do not match");
   if (!token) throw new ApiError(400, "Token is required");
 
-  const user = await User.findOneAndUpdate(
-    {
-      forgotPasswordToken: token,
-      forgotPasswordTokenExpiry: { $gt: Date.now() },
-    },
-    {
-      $set: { password: await bcrypt.hash(password, 10) },
-      $unset: { forgotPasswordToken: 1, forgotPasswordTokenExpiry: 1 },
-    }
-  );
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        forgotPasswordToken: token,
+        forgotPasswordTokenExpiry: { $gt: Date.now() },
+      },
+      {
+        $set: { password: await bcrypt.hash(password, 10) },
+        $unset: { forgotPasswordToken: 1, forgotPasswordTokenExpiry: 1 },
+      }
+    );
 
-  if (!user) throw new ApiError(400, "Invalid token");
+    if (!user) throw new ApiError(400, "Invalid token");
 
-  res.status(200).json(new ApiResponse(200, "Password reset successfully", {}));
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Password reset successfully", {}));
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const changePassword = dbHandler(async (req: RequestWithUser, res) => {
@@ -192,29 +220,31 @@ const changePassword = dbHandler(async (req: RequestWithUser, res) => {
       break;
   }
 
-  const user = await User.findById(req.user?._id);
+  try {
+    const user = await User.findById(req.user?._id);
 
-  if (!user) throw new ApiError(400, "User not found");
+    if (!user) throw new ApiError(400, "User not found");
 
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
-  if (!isMatch) throw new ApiError(400, "Old password is incorrect");
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) throw new ApiError(400, "Old password is incorrect");
 
-  user.password = newPassword;
-  await user.save({ validateBeforeSave: false });
-  res
-    .status(200)
-    .json(new ApiResponse(200, "Password changed successfully", { user }));
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Password changed successfully", { user }));
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const requestVerifyPhoneNumber = dbHandler(
   async (req: RequestWithUser, res) => {
+    const { phoneNumber } = req.body;
+    if (!phoneNumber) throw new ApiError(400, "Phone number is required");
+    const otp = Math.floor(Math.random() * 900000 + 100000).toString();
+
     try {
-      const { phoneNumber } = req.body;
-
-      if (!phoneNumber) throw new ApiError(400, "Phone number is required");
-
-      const otp = Math.floor(Math.random() * 900000 + 100000).toString();
-
       const message = await sendSms(phoneNumber, otp);
 
       if (!message) throw new ApiError(500, "Failed to send SMS");
@@ -247,29 +277,32 @@ const verifyPhoneNumber = dbHandler(async (req: RequestWithUser, res) => {
 
   if (userOtp !== otp) throw new ApiError(400, "Invalid OTP");
 
-  const user = await User.findByIdAndUpdate(
-    req.user?._id,
-    {
-      $set: { isPhoneNumberVerified: true },
-      $unset: {
-        otp: 1,
-        otpSent: 1,
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: { isPhoneNumberVerified: true },
+        $unset: {
+          otp: 1,
+          otpSent: 1,
+        },
       },
-    },
-    {
-      new: true,
-    }
-  );
+      {
+        new: true,
+      }
+    );
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, "OTP verified successfully", { user }));
+    res
+      .status(200)
+      .json(new ApiResponse(200, "OTP verified successfully", { user }));
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 const refreshAccessAndRefreshToken = dbHandler(async (req, res) => {
   const { refreshToken } = req.body;
 
-  console.log("resfreshToken", refreshToken);
   if (!refreshToken) throw new ApiError(400, "Refresh token is required");
 
   const decoded = jwt.verify(
@@ -277,22 +310,26 @@ const refreshAccessAndRefreshToken = dbHandler(async (req, res) => {
     env.refreshTokenSecret
   ) as JwtPayload;
 
-  const user = await User.findById(decoded._id);
+  try {
+    const user = await User.findById(decoded._id);
 
-  if (!user) throw new ApiError(400, "Invalid refresh token");
+    if (!user) throw new ApiError(400, "Invalid refresh token");
 
-  if (refreshToken !== user.refreshToken)
-    throw new ApiError(400, "Refresh token is expired or used");
+    if (refreshToken !== user.refreshToken)
+      throw new ApiError(400, "Refresh token is expired or used");
 
-  const tokens = await generateAccessAndRefreshToken(user._id);
+    const tokens = await generateAccessAndRefreshToken(user._id);
 
-  res.status(200).json(
-    new ApiResponse(200, "Refreshed successfully", {
-      user,
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    })
-  );
+    res.status(200).json(
+      new ApiResponse(200, "Refreshed successfully", {
+        user,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      })
+    );
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
 });
 
 export {
