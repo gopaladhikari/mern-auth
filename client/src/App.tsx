@@ -54,8 +54,6 @@ export default function App() {
 
             dispatch(login(user));
           }
-
-          console.log(res);
         }
       }
     };
