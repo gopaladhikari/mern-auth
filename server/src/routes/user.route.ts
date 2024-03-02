@@ -10,6 +10,7 @@ import {
   changePassword,
   requestVerifyPhoneNumber,
   verifyPhoneNumber,
+  refreshAccessAndRefreshToken,
 } from "../controllers/user.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
 import { upload } from "../middlewares/multer.middleware";
@@ -21,6 +22,9 @@ userRouter.route("/login").post(loginUser);
 userRouter.route("/verify-email").post(verifyEmail);
 userRouter.route("/request-forgot-password").post(requestForgotPassword);
 userRouter.route("/reset-password").post(resetPassword);
+userRouter
+  .route("/refresh-access-and-refresh-token")
+  .post(refreshAccessAndRefreshToken);
 
 // secured routes
 userRouter.route("/get-current-user").get(verifyJWT, getCurrentUser);

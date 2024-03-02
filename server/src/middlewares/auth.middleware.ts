@@ -35,15 +35,13 @@ export const verifyJWT = dbHandler(
       req.user = user;
       next();
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
+      if (error instanceof TokenExpiredError)
         throw new ApiError(401, "Token has expired");
-      } else if (error instanceof NotBeforeError) {
+      else if (error instanceof NotBeforeError)
         throw new ApiError(401, "Token not yet valid");
-      } else if (error instanceof JsonWebTokenError) {
+      else if (error instanceof JsonWebTokenError)
         throw new ApiError(401, "Malformed token");
-      } else {
-        throw new ApiError(500, "Internal Server Error");
-      }
+      else throw new ApiError(500, "Internal Server Error");
     }
   }
 );

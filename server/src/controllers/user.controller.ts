@@ -7,6 +7,8 @@ import { dbHandler } from "../utils/dbHandler";
 import { sendEmail } from "../utils/emailSender";
 import bcrypt from "bcrypt";
 import { sendSms } from "../utils/sendSms";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { env } from "../conf/env";
 
 const generateAccessAndRefreshToken = async (id: string) => {
   const user = await User.findById(id);
@@ -264,6 +266,35 @@ const verifyPhoneNumber = dbHandler(async (req: RequestWithUser, res) => {
     .json(new ApiResponse(200, "OTP verified successfully", { user }));
 });
 
+const refreshAccessAndRefreshToken = dbHandler(async (req, res) => {
+  const { refreshToken } = req.body;
+
+  console.log("resfreshToken", refreshToken);
+  if (!refreshToken) throw new ApiError(400, "Refresh token is required");
+
+  const decoded = jwt.verify(
+    refreshToken,
+    env.refreshTokenSecret
+  ) as JwtPayload;
+
+  const user = await User.findById(decoded._id);
+
+  if (!user) throw new ApiError(400, "Invalid refresh token");
+
+  if (refreshToken !== user.refreshToken)
+    throw new ApiError(400, "Refresh token is expired or used");
+
+  const tokens = await generateAccessAndRefreshToken(user._id);
+
+  res.status(200).json(
+    new ApiResponse(200, "Refreshed successfully", {
+      user,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    })
+  );
+});
+
 export {
   registerUser,
   loginUser,
@@ -275,4 +306,5 @@ export {
   changePassword,
   requestVerifyPhoneNumber,
   verifyPhoneNumber,
+  refreshAccessAndRefreshToken,
 };

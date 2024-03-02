@@ -12,9 +12,17 @@ import { useDispatch } from "react-redux";
 import { login, logout } from "./redux/slices/authSlice";
 import RequestForgotPassword from "./pages/RequestForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import { AxiosError } from "axios";
+import { cookieStore } from "./conf/axios";
 
 export default function App() {
   const dispatch = useDispatch();
+  const { refreshToken } = cookieStore.getAll();
+
+  const options = {
+    secure: true,
+    path: "/",
+  };
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -25,7 +33,30 @@ export default function App() {
           dispatch(login(user));
         } else dispatch(logout());
       } catch (error) {
-        console.error(error);
+        const status = (error as AxiosError)?.response?.status;
+
+        if (status === 401) {
+          const res = await axiosInstance.post(
+            "/user/refresh-access-and-refresh-token",
+            { refreshToken }
+          );
+          if (res.data) {
+            const { accessToken, refreshToken, user } = res.data.data;
+
+            cookieStore.set("refreshToken", refreshToken, {
+              ...options,
+              maxAge: 24 * 60 * 60,
+            });
+            cookieStore.set("accessToken", accessToken, {
+              ...options,
+              maxAge: 4 * 60 * 60,
+            });
+
+            dispatch(login(user));
+          }
+
+          console.log(res);
+        }
       }
     };
     fetchCurrentUser();
