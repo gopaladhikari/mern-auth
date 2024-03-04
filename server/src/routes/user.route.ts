@@ -11,6 +11,7 @@ import {
   requestVerifyPhoneNumber,
   verifyPhoneNumber,
   refreshAccessAndRefreshToken,
+  deleteAccount,
 } from "../controllers/user.controller";
 import { verifyJWT } from "../middlewares/auth.middleware";
 import { upload } from "../middlewares/multer.middleware";
@@ -34,5 +35,6 @@ userRouter
   .route("/request-verify-phone-number")
   .post(verifyJWT, requestVerifyPhoneNumber);
 userRouter.route("/verify-phone-number").post(verifyJWT, verifyPhoneNumber);
+userRouter.route("/delete-account").delete(verifyJWT, deleteAccount);
 
 export { userRouter };

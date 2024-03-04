@@ -18,7 +18,7 @@ const {
 
 export const env = {
   port: Number(PORT) || 8000,
-  mongoUri: String(MONGO_URI) || 8000,
+  mongoUri: String(MONGO_URI),
   accessTokenSecret: String(ACCESS_TOKEN_SECRET),
   accessTokenExpiry: String(ACCESS_TOKEN_EXPIRY),
   refreshTokenSecret: String(REFRESH_TOKEN_SECRET),

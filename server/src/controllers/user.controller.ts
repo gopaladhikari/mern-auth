@@ -332,6 +332,19 @@ const refreshAccessAndRefreshToken = dbHandler(async (req, res) => {
   }
 });
 
+const deleteAccount = dbHandler(async (req: RequestWithUser, res) => {
+  try {
+    await User.findByIdAndDelete(req.user?._id);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Account deleted successfully", { user: null })
+      );
+  } catch (error) {
+    throw new ApiError(500, `Internal Server Error ${error}`);
+  }
+});
+
 export {
   registerUser,
   loginUser,
@@ -344,4 +357,5 @@ export {
   requestVerifyPhoneNumber,
   verifyPhoneNumber,
   refreshAccessAndRefreshToken,
+  deleteAccount,
 };

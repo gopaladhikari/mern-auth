@@ -3,9 +3,13 @@ import { useDispatch } from "react-redux";
 import { showChangePasswordForm } from "../redux/slices/changePasswordSlice";
 import { ChangePasswordForm } from "../components/auth/ChangePasswordForm";
 import { VerifyPhoneNumber } from "../components/auth/VerifyPhoneNumber";
+import { axiosInstance } from "../conf/axios";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../redux/slices/authSlice";
 
 export default function Dashboard() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     firstName,
@@ -19,6 +23,15 @@ export default function Dashboard() {
   const { isShowChangePassword, isChangePasswordSucess } = useAppSelector(
     (state) => state.changePassword
   );
+
+  const handleDelete = async () => {
+    const res = await axiosInstance.delete("/user/delete-account");
+
+    if (res.data) {
+      navigate("/");
+      dispatch(logout());
+    }
+  };
 
   return (
     <main>
@@ -62,9 +75,16 @@ export default function Dashboard() {
             } text-white font-bold py-2 px-4 rounded`}
             onClick={() => dispatch(showChangePasswordForm())}
           >
-            {isShowChangePassword ? "Cancel" : "Change Password"}
+            {isShowChangePassword ? "Loading..." : "Change Password"}
           </button>
         </div>
+        <button
+          type="button"
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-7 rounded mt-4"
+          onClick={handleDelete}
+        >
+          {isShowChangePassword ? "Cancel" : "Delete Account"}
+        </button>
       </div>
     </main>
   );
